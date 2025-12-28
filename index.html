@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>متجر فورتو | Forto Store</title>
+    <link rel="canonical" href="https://fortostore.com/">
+    <link rel="alternate" hreflang="ar" href="https://fortostore.com/">
+    <link rel="alternate" hreflang="en" href="https://fortostore.com/">
+    <link rel="alternate" hreflang="x-default" href="https://fortostore.com/">
+    <link rel="icon" href="images/logo.png" type="image/png">
+    <link rel="apple-touch-icon" href="images/logo.png">
+
+    <!-- SEO Meta Tags -->
+    <meta name="description"
+        content="متجر فورتو (Forto Store) - وجهتك الأولى في مصر لأحدث صيحات الأحذية والسنيكرز العصرية. جودة عالية، أسعار تنافسية، وتوصيل سريع. تسوق الآن أفضل الماركات.">
+    <meta name="keywords"
+        content="أحذية, سنيكرز, فورتو, متجر أحذية, موضة, مصر, Forto Store, Sneakers, Shoes, Egypt, كوتشيات, ملابس, تسوق اونلاين">
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://fortostore.com/">
+    <meta property="og:title" content="متجر فورتو | Forto Store - أفضل الأحذية والسنيكرز">
+    <meta property="og:description"
+        content="اكتشف أحدث تشكيلة من الأحذية والسنيكرز العصرية في متجر فورتو. جودة استثنائية وتصاميم تواكب الموضة.">
+    <meta property="og:image" content="https://fortostore.com/images/logo.png">
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="https://fortostore.com/">
+    <meta property="twitter:title" content="متجر فورتو | Forto Store">
+    <meta property="twitter:description" content="وجهتك الأولى لأحدث صيحات الأحذية والسنيكرز العصرية في مصر.">
+    <meta property="twitter:image" content="https://fortostore.com/images/logo.png">
+
+    <!-- Structured Data (JSON-LD) -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Organization",
+      "name": "Forto Store - متجر فورتو",
+      "url": "https://fortostore.com",
+      "logo": "https://fortostore.com/images/logo.png",
+      "sameAs": [
+        "https://www.facebook.com/fortostore/",
+        "https://www.instagram.com/fortostore/"
+      ],
+      "contactPoint": {
+        "@type": "ContactPoint",
+        "telephone": "+201125655690",
+        "contactType": "customer service",
+        "areaServed": "EG",
+        "availableLanguage": ["Arabic", "English"]
+      }
+    }
+    </script>
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      "url": "https://fortostore.com",
+      "potentialAction": {
+        "@type": "SearchAction",
+        "target": "https://fortostore.com/products.html?search={search_term_string}",
+        "query-input": "required name=search_term_string"
+      }
+    }
+    </script>
+
+    <!-- Icons -->
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=Cairo:wght@400;700;900&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Search Console Verification -->
+    <script>
+        (function () {
+            const settings = JSON.parse(localStorage.getItem('site_settings') || '{}');
+            if (settings.googleVerify) {
+                const meta = document.createElement('meta');
+                meta.name = "google-site-verification";
+                meta.content = settings.googleVerify;
+                document.head.appendChild(meta);
+            }
+        })();
+    </script>
+    <!-- Styles -->
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/animations.css">
+    <style>
+        /* Homepage Specific Styles */
+        .hero {
+            height: 90vh;
+            display: flex;
+            align-items: center;
+            background: linear-gradient(45deg, #f8f9fa 50%, #eef2f5 50%);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-content {
+            z-index: 2;
+        }
+
+        .hero-image {
+            position: absolute;
+            right: 5%;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 45%;
+            z-index: 1;
+        }
+
+        body.rtl .hero-image {
+            right: auto;
+            left: 5%;
+        }
+
+        .hero-image img {
+            width: 100%;
+            filter: drop-shadow(0 20px 40px rgba(0, 0, 0, 0.15));
+            animation: float 6s ease-in-out infinite;
+        }
+
+        .featured-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .product-card {
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            position: relative;
+        }
+
+        .product-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .product-img {
+            height: 300px;
+            background: #f9f9f9;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        .product-img img {
+            max-width: 80%;
+            transition: transform 0.5s ease;
+        }
+
+        .product-card:hover .product-img img {
+            transform: scale(1.1);
+        }
+
+        .product-info {
+            padding: 1.5rem;
+        }
+
+        .category-section {
+            background: var(--color-black);
+            color: white;
+            padding: var(--spacing-xl) 0;
+            position: relative;
+        }
+
+        .category-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2rem;
+        }
+
+        .category-card {
+            height: 250px;
+            background: #222;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            font-weight: bold;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            border: 1px solid #333;
+        }
+
+        .category-card::before {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, var(--color-blue), transparent);
+            opacity: 0;
+            transition: opacity 0.5s ease;
+        }
+
+        .category-card:hover::before {
+            opacity: 0.2;
+        }
+
+        /* Reviews Styles */
+        .reviews-section {
+            padding: var(--spacing-xl) 0;
+            background: #f8f9fa;
+        }
+
+        .reviews-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .review-card {
+            background: white;
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+            border-bottom: 4px solid var(--color-blue);
+            transition: transform 0.3s ease;
+        }
+
+        .review-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .review-stars {
+            color: #f1c40f;
+            margin-bottom: 1rem;
+        }
+
+        .review-name {
+            font-weight: bold;
+            display: block;
+            margin-top: 1rem;
+            color: var(--color-black);
+        }
+    </style>
+</head>
+
+<body class="rtl">
+    <div class="scroll-progress"></div>
+
+    <header>
+        <div class="container">
+            <nav>
+                <a href="index.html" class="logo">
+                    <img src="images/logo.png" alt="FORTO STORE" style="height: 95px; width: auto;">
+                </a>
+                <ul class="nav-links">
+                    <li><a href="index.html" data-i18n="home">الرئيسية</a></li>
+                    <li><a href="products.html" data-i18n="shop">المتجر</a></li>
+                    <li id="auth-link"><a href="login.html" data-i18n="login">دخول</a></li>
+                </ul>
+                <div class="nav-icons">
+                    <a href="cart.html" class="cart-icon">
+                        <i class="fas fa-shopping-bag"></i>
+                        <span class="cart-count">0</span>
+                    </a>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <!-- Hero -->
+        <section class="hero">
+            <div class="container">
+                <div class="hero-content reveal">
+                    <h1 style="margin-bottom: 20px;" data-i18n="hero_title">تحدى الجاذبية<br><span
+                            style="color: var(--color-blue);">بأناقتك</span></h1>
+                    <p style="font-size: 1.2rem; color: #666; margin-bottom: 40px; max-width: 500px;"
+                        data-i18n="hero_desc">
+                        اكتشف أحدث تشكيلة من أزياء الشارع الفاخرة.
+                    </p>
+                    <a href="products.html" class="btn btn-primary hover-glow" data-i18n="shop_collection">تسوق الآن</a>
+                </div>
+            </div>
+        </section>
+
+        <!-- Featured Products -->
+        <section class="container" style="padding: var(--spacing-xl) var(--spacing-sm);">
+            <div class="section-header reveal" style="text-align: center; margin-bottom: var(--spacing-lg);">
+                <h2 data-i18n="trending_now">الأكثر رواجاً</h2>
+                <div style="width: 50px; height: 3px; background: var(--color-blue); margin: 10px auto;"></div>
+            </div>
+
+            <div class="featured-grid" id="featured-products">
+                <!-- Injected via JS -->
+            </div>
+        </section>
+
+        <!-- Categories -->
+        <section class="category-section">
+            <div class="container">
+                <div class="reveal">
+                    <h2 style="margin-bottom: var(--spacing-lg);" data-i18n="categories">الأقسام</h2>
+                </div>
+                <div class="category-grid">
+                    <div class="category-card reveal delay-100" data-i18n="cat_sneakers">سنيكرز</div>
+                    <div class="category-card reveal delay-200" data-i18n="cat_boots">بووت</div>
+                    <div class="category-card reveal delay-300" data-i18n="cat_casual">كاجوال</div>
+                </div>
+            </div>
+        </section>
+
+
+
+        <!-- Dynamic Offers -->
+        <section class="container" id="offer_section"
+            style="padding: var(--spacing-xl) var(--spacing-sm); text-align: center; display: none;">
+            <div class="reveal-zoom"
+                style="background: #f0f8ff; padding: 4rem; border-radius: 20px; border: 1px solid var(--color-blue);">
+                <h2 style="color: var(--color-blue); font-weight: 900;" id="offer_title"></h2>
+                <p style="margin: 20px 0; font-size: 1.4rem; color: #444;" id="offer_desc"></p>
+                <a href="products.html" class="btn btn-primary" id="offer_btn" style="min-width: 200px;"></a>
+            </div>
+        </section>
+
+        <!-- Customer Reviews -->
+        <section class="reviews-section" id="reviews_section" style="display: none;">
+            <div class="container">
+                <div class="section-header reveal" style="text-align: center;">
+                    <h2 data-i18n="customer_reviews">آراء عملائنا</h2>
+                    <div style="width: 50px; height: 3px; background: var(--color-blue); margin: 10px auto;"></div>
+                </div>
+                <div class="reviews-grid" id="reviews-container-home">
+                    <!-- Injected via JS -->
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div>
+                    <h3>FORTO STORE</h3>
+                    <p style="margin-top: 20px; color: #888;" data-i18n="premium_exp">تجربة تسوق فاخرة.</p>
+                    <div class="social-links" style="margin-top: 20px; display: flex; gap: 15px;">
+                        <a href="https://www.facebook.com/fortostore/" target="_blank"
+                            style="color: #888; font-size: 1.5rem;"><i class="fab fa-facebook"></i></a>
+                        <a href="https://www.instagram.com/fortostore/" target="_blank"
+                            style="color: #888; font-size: 1.5rem;"><i class="fab fa-instagram"></i></a>
+                    </div>
+                </div>
+                <div>
+                    <h4 data-i18n="links">روابط</h4>
+                    <ul style="list-style: none; margin-top: 20px; line-height: 2;">
+                        <li><a href="index.html" data-i18n="home">الرئيسية</a></li>
+                        <li><a href="products.html" data-i18n="shop">المتجر</a></li>
+                        <li><a href="cart.html" data-i18n="cart_title">السلة</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 data-i18n="contact">تواصل معنا</h4>
+                    <p style="margin-top: 20px; color: #888;">forto0224@gmail.com</p>
+                    <p style="color: #888;">+20 112 565 5690</p>
+                </div>
+            </div>
+            <div
+                style="margin-top: 4rem; border-top: 1px solid #333; padding-top: 2rem; text-align: center; color: #666;">
+                &copy; 2026 Forto Store. All rights reserved.
+            </div>
+        </div>
+    </footer>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+    <script src="js/firebase-config.js"></script>
+
+    <script src="js/data.js"></script>
+    <script src="js/translations.js"></script>
+    <script src="js/main.js"></script>
+    <script>
+        // Inline JS for Home logic specifically
+        document.addEventListener('DOMContentLoaded', () => {
+            renderDynamicHome();
+        });
+
+        function renderDynamicHome() {
+            const settings = db.getSettings();
+            const lang = localStorage.getItem('forto_lang') || 'ar';
+            const currency = translations[lang]['currency'];
+            const btnText = translations[lang]['view_details'];
+
+            // 1. Render Featured Title
+            const featuredTitleEl = document.querySelector('[data-i18n="trending_now"]');
+            if (featuredTitleEl) {
+                featuredTitleEl.innerText = lang === 'ar' ? settings.featuredTitleAr : settings.featuredTitleEn;
+            }
+
+
+            // 1.1 Offer Visibility
+            const offerSec = document.getElementById('offer_section');
+            if (offerSec) {
+                if (settings.offerEnabled) {
+                    offerSec.style.display = 'block';
+                    document.getElementById('offer_title').innerText = settings.offerTitle || '';
+                    document.getElementById('offer_desc').innerText = settings.offerDesc || '';
+                    document.getElementById('offer_btn').innerText = settings.offerBtn || '';
+                } else {
+                    offerSec.style.display = 'none';
+                }
+            }
+            const container = document.getElementById('featured-products');
+            container.innerHTML = '';
+
+            const featuredIds = settings.featuredProductIds || [];
+            const allProducts = db.getProducts();
+            const featuredProducts = allProducts.filter(p => featuredIds.includes(p.id));
+
+            // Fallback if none selected
+            const displayProducts = featuredProducts.length > 0 ? featuredProducts : allProducts.slice(0, 3);
+
+            displayProducts.forEach((p, index) => {
+                const delay = (index + 1) * 100;
+                const card = document.createElement('div');
+                card.className = `product-card reveal delay-${delay}`;
+                card.onclick = () => window.location.href = `product.html?id=${p.id}`;
+                card.innerHTML = `
+                    <div class="product-img">
+                        <img src="${p.image}" alt="${p.name}">
+                    </div>
+                    <div class="product-info">
+                        <h3>${p.name}</h3>
+                        <p style="color: var(--color-blue); font-weight: bold; margin-top: 5px;">
+                            ${p.oldPrice ? `<span style="text-decoration: line-through; color: #999; font-size: 0.9rem; margin-left: 5px;">${p.oldPrice} ${currency}</span>` : ''}
+                            ${p.price} ${currency}
+                        </p>
+                        <div class="btn btn-secondary" style="margin-top: 15px; width: 100%;" data-i18n="view_details">${btnText}</div>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+
+            // 3. Render Collections
+            const catSec = document.querySelector('.category-section');
+            if (catSec) {
+                catSec.style.display = (settings.showCollections !== false) ? 'block' : 'none';
+            }
+
+            const catGrid = document.querySelector('.category-grid');
+            if (catGrid && settings.collections) {
+                catGrid.innerHTML = '';
+                settings.collections.forEach((col, index) => {
+                    const delay = (index + 1) * 100;
+                    const card = document.createElement('div');
+                    card.className = `category-card reveal delay-${delay}`;
+                    card.style.backgroundImage = `linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.3)), url('${col.image}')`;
+                    card.style.backgroundSize = 'cover';
+                    card.style.backgroundPosition = 'center';
+                    card.innerText = lang === 'ar' ? col.nameAr : col.nameEn;
+                    card.onclick = () => window.location.href = col.link;
+                    catGrid.appendChild(card);
+                });
+            }
+
+            // 4. Render Reviews
+            const reviewsSec = document.getElementById('reviews_section');
+            if (reviewsSec) {
+                if (settings.reviewsEnabled) {
+                    reviewsSec.style.display = 'block';
+                    const revContainer = document.getElementById('reviews-container-home');
+                    revContainer.innerHTML = '';
+                    (settings.reviews || []).forEach((rev, index) => {
+                        const stars = '★'.repeat(rev.rating) + '☆'.repeat(5 - rev.rating);
+                        const card = document.createElement('div');
+                        card.className = `review-card reveal delay-${(index + 1) * 100}`;
+                        card.innerHTML = `
+                            <div class="review-stars">${stars}</div>
+                            <p class="review-comment" style="font-style: italic; color: #555;">"${rev.comment}"</p>
+                            <span class="review-name">- ${rev.name}</span>
+                        `;
+                        revContainer.appendChild(card);
+                    });
+                } else {
+                    reviewsSec.style.display = 'none';
+                }
+            }
+
+            // Re-trigger observer
+            initScrollAnimations();
+        }
+
+        // Listen for internal settings updates or language change
+        window.addEventListener('langChange', renderDynamicHome);
+        window.addEventListener('settingsUpdated', renderDynamicHome);
+    </script>
+    <script src="js/pixel.js"></script>
+</body>
+
+</html>

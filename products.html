@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تسوق الأحذية والسنيكرز | Shop Shoes | Forto Store</title>
+    <link rel="canonical" href="https://fortostore.com/products.html">
+    <link rel="alternate" hreflang="ar" href="https://fortostore.com/products.html">
+    <link rel="alternate" hreflang="en" href="https://fortostore.com/products.html">
+    <link rel="alternate" hreflang="x-default" href="https://fortostore.com/products.html">
+    <meta name="description"
+        content="تسوق أحدث تشكيلة من الأحذية والسنيكرز في متجر فورتو. أفضل الأسعار، جودة عالية، وتوصيل سريع في مصر. Shop the latest shoes and sneakers collection.">
+    <meta name="keywords"
+        content="تسوق أحذية, شراء سنيكرز, متجر فورتو, أحذية رياضية, كوتشيات, shop shoes, buy sneakers, Forto Store">
+    <link rel="icon" href="images/logo.png" type="image/png">
+
+    <!-- Open Graph -->
+    <meta property="og:title" content="تسوق الأحذية | Forto Store">
+    <meta property="og:description" content="اكتشف أحدث تشكيلة من الأحذية والسنيكرز العصرية">
+    <meta property="og:image" content="https://fortostore.com/images/logo.png">
+    <meta property="og:url" content="https://fortostore.com/products.html">
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=Cairo:wght@400;700;900&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/animations.css">
+    <link rel="stylesheet" href="css/shop.css">
+    <style>
+        /* Filter Modal */
+        .filter-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .filter-modal.active {
+            display: flex;
+        }
+
+        .filter-modal-content {
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            width: 90%;
+            max-width: 500px;
+            max-height: 80vh;
+            overflow-y: auto;
+            position: relative;
+        }
+
+        .filter-close {
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            font-size: 1.5rem;
+            cursor: pointer;
+            background: none;
+            border: none;
+        }
+
+        body.rtl .filter-close {
+            left: auto;
+            right: 15px;
+        }
+
+        .filter-section {
+            margin-bottom: 2rem;
+        }
+
+        .filter-section h3 {
+            margin-bottom: 1rem;
+            font-size: 1.2rem;
+        }
+
+        .color-options {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .color-option {
+            padding: 10px 15px;
+            border: 2px solid #ddd;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s;
+            background: white;
+            font-size: 0.9rem;
+            color: #333;
+        }
+
+        .color-option.active {
+            border-color: var(--color-blue);
+            background: var(--color-blue);
+            color: white;
+        }
+
+        .size-options {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .size-option {
+            padding: 10px 15px;
+            border: 2px solid #ddd;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s;
+            background: white;
+        }
+
+        .size-option.active {
+            border-color: var(--color-blue);
+            background: var(--color-blue);
+            color: white;
+        }
+
+        .price-range {
+            margin-top: 1rem;
+        }
+
+        .price-inputs {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .price-inputs input {
+            flex: 1;
+        }
+
+        .filter-btn-container {
+            position: relative;
+            margin-bottom: 2rem;
+        }
+
+        .filter-toggle-btn {
+            background: var(--color-blue);
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: all 0.3s;
+        }
+
+        .filter-toggle-btn:hover {
+            background: #005fa3;
+            transform: translateY(-2px);
+        }
+    </style>
+</head>
+
+<body class="rtl">
+    <div class="scroll-progress"></div>
+
+    <header>
+        <div class="container">
+            <nav>
+                <a href="index.html" class="logo">
+                    <img src="images/logo.png" alt="FORTO STORE" style="height: 95px; width: auto;">
+                </a>
+                <ul class="nav-links">
+                    <li><a href="index.html" data-i18n="home">الرئيسية</a></li>
+                    <li><a href="products.html" data-i18n="shop">المتجر</a></li>
+                    <li id="auth-link"><a href="login.html" data-i18n="login">دخول</a></li>
+                </ul>
+                <div class="nav-icons">
+                    <a href="cart.html" class="cart-icon">
+                        <i class="fas fa-shopping-bag"></i>
+                        <span class="cart-count">0</span>
+                    </a>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <div class="page-header" style="padding: 6rem 0 1rem; margin-bottom: 0;">
+        <div class="container">
+            <h1 data-i18n="shop_header_title" style="font-size: 2.2rem; margin-bottom: 0.2rem;">تسوق الأحذية</h1>
+            <p data-i18n="shop_header_desc" style="margin-bottom: 1.5rem; font-size: 1rem;">أحدث تشكيلة من الأحذية
+                العصرية.</p>
+
+            <!-- Search Container -->
+            <div class="search-container" style="position: relative; max-width: 550px; margin-inline: auto;">
+                <input type="text" id="store-search" placeholder="ما الذي تبحث عنه؟ ..." oninput="applyFilters()"
+                    style="width: 100%; padding: 12px 45px 12px 15px; border-radius: 10px; border: 2px solid #ddd; font-family: 'Cairo', sans-serif; font-size: 1rem; transition: all 0.3s; outline: none; background: #fff; box-shadow: 0 4px 12px rgba(0,0,0,0.05);">
+                <i class="fas fa-search"
+                    style="position: absolute; right: 15px; top: 50%; transform: translateY(-50%); color: var(--color-blue); font-size: 1rem; pointer-events: none;"></i>
+            </div>
+        </div>
+    </div>
+
+    <main class="container" style="padding-top: 1rem;">
+        <!-- Filter Button -->
+        <div class="filter-btn-container">
+            <button class="filter-toggle-btn" onclick="openFilterModal()"
+                style="padding: 10px 20px; font-size: 0.95rem;">
+                <i class="fas fa-filter"></i>
+                <span data-i18n="filter_btn">تصفية المنتجات</span>
+            </button>
+        </div>
+
+        <!-- Product Grid -->
+        <div class="product-grid" id="product-container" style="width: 100%;">
+            <!-- Injected via JS -->
+        </div>
+    </main>
+
+    <!-- Filter Modal -->
+    <div id="filter-modal" class="filter-modal">
+        <div class="filter-modal-content">
+            <button class="filter-close" onclick="closeFilterModal()">
+                <i class="fas fa-times"></i>
+            </button>
+
+            <h2 style="margin-bottom: 2rem;" data-i18n="filter_title">تصفية المنتجات</h2>
+
+            <!-- Price Range -->
+            <div class="filter-section">
+                <h3 data-i18n="price_range">نطاق السعر</h3>
+                <div class="price-inputs">
+                    <input type="number" id="min-price" placeholder="من" min="0">
+                    <input type="number" id="max-price" placeholder="إلى" min="0">
+                </div>
+            </div>
+
+            <!-- Colors -->
+            <div class="filter-section">
+                <h3 data-i18n="colors">الألوان</h3>
+                <div class="color-options" id="color-filters">
+                    <!-- Injected via JS -->
+                </div>
+            </div>
+
+            <!-- Sizes -->
+            <div class="filter-section">
+                <h3 data-i18n="sizes">المقاسات</h3>
+                <div class="size-options" id="size-filters">
+                    <!-- Injected via JS -->
+                </div>
+            </div>
+
+            <!-- Apply Button -->
+            <button class="btn btn-primary" style="width: 100%; margin-top: 2rem;"
+                onclick="applyFilters(); closeFilterModal();">
+                <span data-i18n="apply_filters">تطبيق الفلاتر</span>
+            </button>
+            <button class="btn btn-secondary" style="width: 100%; margin-top: 1rem;" onclick="resetFilters()">
+                <span data-i18n="reset_filters">إعادة تعيين</span>
+            </button>
+        </div>
+    </div>
+
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div>
+                    <h3>FORTO STORE</h3>
+                    <p style="margin-top: 20px; color: #888;" data-i18n="premium_exp">تجربة تسوق فاخرة.</p>
+                    <div class="social-links" style="margin-top: 20px; display: flex; gap: 15px;">
+                        <a href="https://www.facebook.com/fortostore/" target="_blank"
+                            style="color: #888; font-size: 1.5rem;"><i class="fab fa-facebook"></i></a>
+                        <a href="https://www.instagram.com/fortostore/" target="_blank"
+                            style="color: #888; font-size: 1.5rem;"><i class="fab fa-instagram"></i></a>
+                    </div>
+                </div>
+                <div>
+                    <h4 data-i18n="links">روابط</h4>
+                    <ul style="list-style: none; margin-top: 20px; line-height: 2;">
+                        <li><a href="index.html" data-i18n="home">الرئيسية</a></li>
+                        <li><a href="products.html" data-i18n="shop">المتجر</a></li>
+                        <li><a href="cart.html" data-i18n="cart_title">السلة</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 data-i18n="contact">تواصل معنا</h4>
+                    <p style="margin-top: 20px; color: #888;">forto0224@gmail.com</p>
+                    <p style="color: #888;">+20 112 565 5690</p>
+                </div>
+            </div>
+            <div
+                style="margin-top: 4rem; border-top: 1px solid #333; padding-top: 2rem; text-align: center; color: #666;">
+                &copy; 2026 Forto Store. All rights reserved.
+            </div>
+        </div>
+    </footer>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+    <script src="js/firebase-config.js"></script>
+
+    <script src="js/data.js"></script>
+    <script src="js/translations.js"></script>
+    <script src="js/main.js"></script>
+    <script>
+        let allProducts = [];
+        let selectedColors = [];
+        let selectedSizes = [];
+        let minPrice = 0;
+        let maxPrice = Infinity;
+
+        document.addEventListener('DOMContentLoaded', () => {
+            allProducts = db.getProducts();
+            initializeFilters();
+            renderProducts(allProducts);
+        });
+
+        function initializeFilters() {
+            // Get unique colors
+            // Get unique colors - handle both string and array formats
+            const allColors = allProducts.flatMap(p => {
+                if (Array.isArray(p.color)) return p.color;
+                if (typeof p.color === 'string' && p.color.trim()) return [p.color.trim()];
+                return [];
+            });
+            const colors = [...new Set(allColors)].filter(c => c);
+            const colorContainer = document.getElementById('color-filters');
+
+            const colorMap = {
+                'Black': '#000000',
+                'White': '#FFFFFF',
+                'Brown': '#8B4513',
+                'Red': '#FF0000',
+                'Blue': '#0000FF',
+                'Grey': '#808080'
+            };
+
+            colors.forEach(color => {
+                const colorDiv = document.createElement('div');
+                colorDiv.className = 'color-option';
+                // colorDiv.style.backgroundColor = colorMap[color] || '#ccc'; // REMOVED
+                // if (color === 'White') colorDiv.style.border = '3px solid #ddd'; // REMOVED
+
+                // Translate color if basic logic is available, otherwise show original
+                // For now, simple mapping of known colors or just the string
+                const colorNames = {
+                    'Black': 'أسود',
+                    'White': 'أبيض',
+                    'Brown': 'بني',
+                    'Red': 'أحمر',
+                    'Blue': 'أزرق',
+                    'Grey': 'رمادي',
+                    'Green': 'أخضر',
+                    'Yellow': 'أصفر',
+                    'Navy': 'كحلي',
+                    'Beige': 'بيج'
+                };
+
+                const lang = localStorage.getItem('forto_lang') || 'ar';
+                let displayText = color;
+                if (lang === 'ar' && colorNames[color]) {
+                    displayText = colorNames[color];
+                }
+
+                colorDiv.textContent = displayText;
+                colorDiv.title = color;
+                colorDiv.onclick = () => toggleColor(color, colorDiv);
+                colorContainer.appendChild(colorDiv);
+            });
+
+            // Get unique sizes
+            const sizes = [...new Set(allProducts.flatMap(p => p.size))].sort((a, b) => a - b);
+            const sizeContainer = document.getElementById('size-filters');
+
+            sizes.forEach(size => {
+                const sizeDiv = document.createElement('div');
+                sizeDiv.className = 'size-option';
+                sizeDiv.textContent = size;
+                sizeDiv.onclick = () => toggleSize(size, sizeDiv);
+                sizeContainer.appendChild(sizeDiv);
+            });
+        }
+
+        function toggleColor(color, element) {
+            if (selectedColors.includes(color)) {
+                selectedColors = selectedColors.filter(c => c !== color);
+                element.classList.remove('active');
+            } else {
+                selectedColors.push(color);
+                element.classList.add('active');
+            }
+        }
+
+        function toggleSize(size, element) {
+            if (selectedSizes.includes(size)) {
+                selectedSizes = selectedSizes.filter(s => s !== size);
+                element.classList.remove('active');
+            } else {
+                selectedSizes.push(size);
+                element.classList.add('active');
+            }
+        }
+
+        function openFilterModal() {
+            document.getElementById('filter-modal').classList.add('active');
+        }
+
+        function closeFilterModal() {
+            document.getElementById('filter-modal').classList.remove('active');
+        }
+
+        function applyFilters() {
+            minPrice = parseInt(document.getElementById('min-price').value) || 0;
+            maxPrice = parseInt(document.getElementById('max-price').value) || Infinity;
+            const searchQuery = document.getElementById('store-search').value.toLowerCase().trim();
+
+            let filtered = allProducts.filter(p => {
+                // Search filter
+                if (searchQuery && !p.name.toLowerCase().includes(searchQuery)) return false;
+
+                // Price filter
+                if (p.price < minPrice || p.price > maxPrice) return false;
+
+                // Color filter
+                // Color filter - check if any of the product colors match the selected colors
+                if (selectedColors.length > 0) {
+                    const pColors = Array.isArray(p.color) ? p.color : (p.color ? [p.color] : []);
+                    const hasColor = pColors.some(c => selectedColors.includes(c));
+                    if (!hasColor) return false;
+                }
+
+                // Size filter
+                if (selectedSizes.length > 0 && !p.size.some(s => selectedSizes.includes(s))) return false;
+
+                return true;
+            });
+
+            renderProducts(filtered);
+        }
+
+        function resetFilters() {
+            selectedColors = [];
+            selectedSizes = [];
+            minPrice = 0;
+            maxPrice = Infinity;
+            document.getElementById('min-price').value = '';
+            document.getElementById('max-price').value = '';
+            document.getElementById('store-search').value = '';
+            document.querySelectorAll('.color-option').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.size-option').forEach(el => el.classList.remove('active'));
+            renderProducts(allProducts);
+            closeFilterModal();
+        }
+
+        function renderProducts(products) {
+            const container = document.getElementById('product-container');
+            container.innerHTML = '';
+            const lang = localStorage.getItem('forto_lang') || 'ar';
+            const currency = translations[lang]['currency'];
+
+            const offers = db.getSpecialOffers();
+            const isGlobalEnabled = offers && offers.globalDiscountEnabled;
+            const globalDiscountPercent = (isGlobalEnabled && offers.globalDiscountPercentage) ? parseFloat(offers.globalDiscountPercentage) : 0;
+            const globalDiscountText = offers.globalDiscountText || '';
+
+            if (products.length === 0) {
+                container.innerHTML = `<p data-i18n="no_products" style="text-align: center; padding: 4rem; font-size: 1.2rem;">${translations[lang].no_products}</p>`;
+                return;
+            }
+
+            const btnText = translations[lang]['view_details'];
+
+            products.forEach((p, index) => {
+                let currentPrice = p.price;
+                let oldPrice = p.oldPrice || null;
+                let discountPercent = 0;
+                let badgeLabel = lang === 'ar' ? 'خصم' : 'OFF';
+
+                // 1. Calculate individual product discount if oldPrice exists
+                if (p.oldPrice && p.oldPrice > p.price) {
+                    discountPercent = Math.round(((p.oldPrice - p.price) / p.oldPrice) * 100);
+                }
+
+                // 2. Apply Global Discount if active
+                if (globalDiscountPercent > 0) {
+                    oldPrice = p.price;
+                    currentPrice = Math.max(0, p.price - (p.price * globalDiscountPercent) / 100);
+                    discountPercent = Math.round(globalDiscountPercent); // Prioritize global for display
+                    if (globalDiscountText) badgeLabel = globalDiscountText;
+                }
+
+                const el = document.createElement('div');
+                el.className = 'product-card reveal';
+                el.style.transitionDelay = `${index * 0.05}s`;
+                el.onclick = () => window.location.href = `product.html?id=${p.id}`;
+
+                el.innerHTML = `
+                    <div class="product-img" style="position: relative;">
+                        <img src="${p.image}" alt="${p.name}">
+                        ${discountPercent > 0 ? `
+                            <div class="discount-badge" style="position: absolute; top: 12px; right: 12px; background: #ff4757; color: white; padding: 6px 12px; border-radius: 8px; font-weight: 800; font-size: 0.8rem; z-index: 10; box-shadow: 0 4px 10px rgba(255, 71, 87, 0.3); animation: pulse-red 2s infinite;">
+                                <i class="fas fa-fire" style="margin-left: 5px;"></i> ${badgeLabel} ${discountPercent}%
+                            </div>
+                        ` : ''}
+                    </div>
+                    <div class="product-info">
+                        <h3>${p.name}</h3>
+                        <span class="product-price">
+                             ${oldPrice ? `<span style="text-decoration: line-through; color: #999; font-size: 0.9rem; margin-left: 8px;">${oldPrice} ${currency}</span>` : ''}
+                             <span style="color: #2fb380; font-weight: 800;">${currentPrice} ${currency}</span>
+                        </span>
+                        <div class="btn btn-secondary" data-i18n="view_details" style="width: 100%; margin-top: 1rem; border-radius: 10px;">${btnText}</div>
+                    </div>
+                 `;
+                container.appendChild(el);
+            });
+
+            initScrollAnimations();
+        }
+
+        window.addEventListener('langChange', () => renderProducts(allProducts));
+    </script>
+    </script>
+    <script src="js/pixel.js"></script>
+</body>
+
+</html>
