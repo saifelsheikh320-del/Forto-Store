@@ -115,11 +115,16 @@ class StoreDB {
     saveProduct(product) {
         let products = this.getProducts();
         if (product.id) {
-            // Update
+            // Check if it exists for update
             const index = products.findIndex(p => p.id == product.id);
-            if (index !== -1) products[index] = product;
+            if (index !== -1) {
+                products[index] = product;
+            } else {
+                // If ID is provided but not found, it's likely a new product from an import
+                products.push(product);
+            }
         } else {
-            // Create
+            // Create New
             product.id = Date.now();
             products.push(product);
         }

@@ -1270,24 +1270,41 @@ function handleImport(file, type) {
             const rows = XLSX.utils.sheet_to_json(workbook.Sheets[sheetName]);
 
             if (type === 'products') {
-                rows.forEach(row => {
-                    const product = {
-                        name: row.name || row['الاسم'],
-                        price: parseFloat(row.price || row['السعر']),
-                        category: row.category || row['القسم'],
-                        color: (row.color || row['الألوان'] || '').toString().split(',').map(c => c.trim()).filter(c => c),
-                        size: (row.size || row['المقاسات'] || '').toString().split(',').map(s => s.trim()).filter(s => s),
-                        image: row.image || row['رابط الصورة'],
-                        description: row.description || row['الوصف']
-                    };
-                    if (row.id) product.id = parseInt(row.id);
-                    db.saveProduct(product);
+                rows.forEach((row, index) => {
+                    try {
+                        // Mapping with support for multiple header variations
+                        const productName = row.name || row['الاسم'] || row['اسم المنتج'];
+                        const productPrice = row.price || row['السعر'] || row['سعر المنتج'];
+
+                        if (!productName) return; // Skip empty rows
+
+                        const product = {
+                            name: productName,
+                            price: parseFloat(productPrice) || 0,
+                            category: row.category || row['القسم'] || row['الفئة'] || 'Uncategorized',
+                            color: (row.color || row['الألوان'] || row['اللون'] || '').toString().split(',').map(c => c.trim()).filter(c => c),
+                            size: (row.size || row['المقاسات'] || row['المقاس'] || '').toString().split(',').map(s => s.trim()).filter(s => s),
+                            image: row.image || row['رابط الصورة'] || row['الصورة'] || '',
+                            description: row.description || row['الوصف'] || ''
+                        };
+
+                        // Only set ID if it's a valid number
+                        const rowId = row.id || row['ID'] || row['المعرف'];
+                        if (rowId && !isNaN(parseInt(rowId))) {
+                            product.id = parseInt(rowId);
+                        }
+
+                        db.saveProduct(product);
+                    } catch (rowError) {
+                        console.error(`Error processing row ${index}:`, rowError);
+                    }
                 });
                 refreshProducts();
                 showToast(`تم استيراد ${rows.length} منتج بنجاح!`, 'success');
             }
         } catch (e) {
-            showAlert('حدث خطأ أثناء استيراد الملف. يرجى التأكد من تنسيق الملف الصحيح.', 'error');
+            console.error('Import Error:', e);
+            showAlert('حدث خطأ أثناء استيراد الملف. يرجى التأكد من تنسيق الملف الصحيح ومسميات الأعمدة.', 'error');
         };
     };
     reader.readAsArrayBuffer(file);
@@ -1837,6 +1854,10 @@ const fieldDefinitions = {
         { id: 'price', label: 'السعر' },
         { id: 'category', label: 'القسم' },
         { id: 'stock', label: 'الكمية' },
+        { id: 'color', label: 'الألوان' },
+        { id: 'size', label: 'المقاسات' },
+        { id: 'image', label: 'رابط الصورة' },
+        { id: 'description', label: 'الوصف' },
         { id: 'status', label: 'الحالة' },
         { id: 'url', label: 'رابط المنتج' }
     ],
@@ -1892,6 +1913,10 @@ function confirmExport() {
             if (fields.includes('price')) row['السعر'] = p.price;
             if (fields.includes('category')) row['القسم'] = p.category;
             if (fields.includes('stock')) row['الكمية'] = p.stock || 100;
+            if (fields.includes('color')) row['الألوان'] = (p.color || []).join(', ');
+            if (fields.includes('size')) row['المقاسات'] = (p.size || []).join(', ');
+            if (fields.includes('image')) row['رابط الصورة'] = p.image || '';
+            if (fields.includes('description')) row['الوصف'] = p.description || '';
             if (fields.includes('status')) row['الحالة'] = p.archived ? 'مؤرشف' : 'نشط';
             if (fields.includes('url')) {
                 const baseUrl = window.location.origin;
