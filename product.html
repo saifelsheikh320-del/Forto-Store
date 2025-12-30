@@ -259,11 +259,18 @@
 
                     <p class="detail-desc" style="margin-bottom: 1.5rem; line-height: 1.6;">${product.description}</p>
                     
+                    ${product.quantity <= 0 ? `
+                        <div class="stock-status out-of-stock" style="background: #fff5f5; color: #e74c3c; padding: 15px; border-radius: 10px; border: 1px solid #fed7d7; margin-bottom: 1.5rem; text-align: center;">
+                            <div style="font-weight: 900; font-size: 1.1rem;"><i class="fas fa-exclamation-circle"></i> ${t.sold_out}</div>
+                            <div style="font-size: 0.9rem; margin-top: 5px;">${t.available_soon}</div>
+                        </div>
+                    ` : ''}
+
                     <div class="action-buttons" style="flex-wrap: wrap; gap: 0.8rem; margin-top: 1.5rem;">
-                        <button class="btn btn-primary" onclick="addToCartClick(${product.id})">
+                        <button class="btn btn-primary" onclick="addToCartClick(${product.id})" ${product.quantity <= 0 ? 'disabled style="opacity: 0.5; background: #999; border-color: #999; cursor: not-allowed;"' : ''}>
                             <i class="fas fa-shopping-cart" style="margin-right: 10px;"></i> <span data-i18n="add_to_cart">${t.add_to_cart}</span>
                         </button>
-                        <button class="btn btn-primary" onclick="buyNowClick(${product.id})" style="background-color: var(--color-blue); border-color: var(--color-blue);">
+                        <button class="btn btn-primary" onclick="buyNowClick(${product.id})" style="${product.quantity <= 0 ? 'opacity: 0.5; background: #ccc; border-color: #ccc; cursor: not-allowed;' : 'background-color: var(--color-blue); border-color: var(--color-blue);'}" ${product.quantity <= 0 ? 'disabled' : ''}>
                              <i class="fas fa-bolt" style="margin-right: 10px;"></i> <span data-i18n="buy_now">${t.buy_now}</span>
                         </button>
                     </div>

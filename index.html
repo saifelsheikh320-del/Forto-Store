@@ -427,10 +427,23 @@
                 const delay = (index + 1) * 100;
                 const card = document.createElement('div');
                 card.className = `product-card reveal delay-${delay}`;
+
+                const isOutOfStock = p.quantity <= 0;
+                if (isOutOfStock) {
+                    card.classList.add('out-of-stock');
+                    card.style.opacity = '0.7';
+                }
+
                 card.onclick = () => window.location.href = `product?id=${p.id}`;
                 card.innerHTML = `
-                    <div class="product-img">
-                        <img src="${p.image}" alt="${p.name}">
+                    <div class="product-img" style="position: relative;">
+                        <img src="${p.image}" alt="${p.name}" style="${isOutOfStock ? 'filter: grayscale(0.5);' : ''}">
+                        ${isOutOfStock ? `
+                            <div class="sold-out-badge" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: rgba(0,0,0,0.8); color: white; padding: 10px 20px; border-radius: 5px; font-weight: 900; z-index: 10; width: 80%; text-align: center;">
+                                <div style="font-size: 1.2rem;">${translations[lang].sold_out}</div>
+                                <div style="font-size: 0.8rem; font-weight: 400; margin-top: 5px;">${translations[lang].available_soon}</div>
+                            </div>
+                        ` : ''}
                     </div>
                     <div class="product-info">
                         <h3>${p.name}</h3>

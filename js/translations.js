@@ -50,8 +50,10 @@ const translations = {
 
         // Product Detail
         add_to_cart: "أضف للسلة",
-        buy_now: "اشتر الآن",
+        buy_now: "اشتري الآن",
         added: "تمت الإضافة",
+        sold_out: "خلصت",
+        available_soon: "هتتوفر قريب",
         order_whatsapp: "اطلب عبر واتساب",
         product_not_found: "المنتج غير موجود",
         currency: "ج.م",
@@ -146,6 +148,8 @@ const translations = {
         add_to_cart: "Add to Cart",
         buy_now: "Buy Now",
         added: "Added",
+        sold_out: "Sold Out",
+        available_soon: "Available Soon",
         order_whatsapp: "Order on WhatsApp",
         product_not_found: "Product not found",
         currency: "EGP",
