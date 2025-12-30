@@ -131,7 +131,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (Notification.permission === "granted") {
                 new Notification("Forto Store Admin", {
                     body: `💸 تم استقبال ${newOrdersCount} طلب جديد!`,
-                    icon: '../images/logo.png',
+                    icon: '../images/logo-v2.png',
                     vibrate: [200, 100, 200]
                 });
             }
@@ -1487,6 +1487,7 @@ async function refreshStats() {
 function refreshAbandonedCarts() {
     const abandoned = db.getAbandonedCarts();
     const tbody = document.getElementById('abandoned-table');
+    if (!tbody) return;
     tbody.innerHTML = '';
 
     if (abandoned.length === 0) {
@@ -1602,7 +1603,7 @@ function refreshDiscounts() {
     // 1. Refresh Coupons
     const coupons = db.getCoupons();
     const tbody = document.getElementById('coupons-table');
-    tbody.innerHTML = '';
+    if (tbody) tbody.innerHTML = '';
 
     coupons.forEach(c => {
         const tr = document.createElement('tr');

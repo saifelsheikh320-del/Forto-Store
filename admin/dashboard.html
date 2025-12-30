@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Forto Store Admin | نظام إدارة المتجر</title>
-    <link rel="icon" href="../images/logo.png" type="image/png">
+    <link rel="icon" href="../images/logo-v2.png" type="image/png">
     <link
         href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=Cairo:wght@400;700;900&display=swap"
         rel="stylesheet">
@@ -1609,7 +1609,7 @@
     <!-- Sidebar -->
     <aside class="sidebar" id="sidebar">
         <div class="sidebar-brand">
-            <img src="../images/logo.png" alt="Logo"
+            <img src="../images/logo-v2.png" alt="Logo"
                 style="height: 50px; margin-bottom: 10px; filter: drop-shadow(0 0 5px rgba(255,255,255,0.2));">
             <h2 style="font-size: 1.1rem; font-weight: 900; color: #fff; letter-spacing: 1px; margin: 0;">FORTO STORE
                 ADMIN</h2>
@@ -2578,183 +2578,184 @@
                     </div>
                 </div>
             </div>
+        </div>
 
-            <!-- Abandoned Carts Section -->
+        <!-- Abandoned Carts Section -->
 
-            <div id="section-abandoned" class="content-section">
-                <div class="page-header">
-                    <h1>السلّات المتروكة (Abandoned Carts)</h1>
+        <div id="section-abandoned" class="content-section">
+            <div class="page-header">
+                <h1>السلّات المتروكة (Abandoned Carts)</h1>
+            </div>
+
+            <div class="card">
+                <div class="table-responsive">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>التاريخ</th>
+                                <th>العميل</th>
+                                <th>المنتجات</th>
+                                <th>الإجمالي</th>
+                                <th>الإجراءات</th>
+                            </tr>
+                        </thead>
+                        <tbody id="abandoned-table"></tbody>
+                    </table>
                 </div>
+            </div>
+        </div>
 
-                <div class="card">
+        <!-- Discounts Section -->
+        <div id="section-discounts" class="content-section">
+            <div class="page-header">
+                <h1>إدارة الخصومات والعروض</h1>
+            </div>
+
+            <div class="grid-2-col-wide">
+                <!-- Coupon Codes -->
+                <div class="card h-fit">
+                    <div class="card-header">
+                        <h2>كوبونات الخصم</h2>
+                        <button class="btn btn-primary" onclick="openCouponModal()">
+                            <i class="fas fa-plus"></i> إضافة كوبون
+                        </button>
+                    </div>
                     <div class="table-responsive">
                         <table>
                             <thead>
                                 <tr>
+                                    <th>الكود</th>
+                                    <th>الخصم</th>
                                     <th>التاريخ</th>
-                                    <th>العميل</th>
-                                    <th>المنتجات</th>
-                                    <th>الإجمالي</th>
-                                    <th>الإجراءات</th>
+                                    <th>حذف</th>
                                 </tr>
                             </thead>
-                            <tbody id="abandoned-table"></tbody>
+                            <tbody id="coupons-table"></tbody>
                         </table>
                     </div>
                 </div>
-            </div>
 
-            <!-- Discounts Section -->
-            <div id="section-discounts" class="content-section">
-                <div class="page-header">
-                    <h1>إدارة الخصومات والعروض</h1>
-                </div>
-
-                <div class="grid-2-col-wide">
-                    <!-- Coupon Codes -->
-                    <div class="card h-fit">
-                        <div class="card-header">
-                            <h2>كوبونات الخصم</h2>
-                            <button class="btn btn-primary" onclick="openCouponModal()">
-                                <i class="fas fa-plus"></i> إضافة كوبون
-                            </button>
-                        </div>
-                        <div class="table-responsive">
-                            <table>
-                                <thead>
-                                    <tr>
-                                        <th>الكود</th>
-                                        <th>الخصم</th>
-                                        <th>التاريخ</th>
-                                        <th>حذف</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="coupons-table"></tbody>
-                            </table>
-                        </div>
+                <!-- Special Offers -->
+                <div class="card h-fit">
+                    <div class="card-header">
+                        <h2>العروض الخاصة</h2>
                     </div>
+                    <form id="special-offers-form">
+                        <div class="form-section">
+                            <h3 class="section-title border-warning">
+                                <i class="fas fa-tags icon-warning"></i> تخفيض شامل للمتجر
+                            </h3>
 
-                    <!-- Special Offers -->
-                    <div class="card h-fit">
-                        <div class="card-header">
-                            <h2>العروض الخاصة</h2>
-                        </div>
-                        <form id="special-offers-form">
-                            <div class="form-section">
-                                <h3 class="section-title border-warning">
-                                    <i class="fas fa-tags icon-warning"></i> تخفيض شامل للمتجر
-                                </h3>
-
-                                <div class="form-group checkbox-group">
-                                    <input type="checkbox" id="off-global-enabled">
-                                    <label for="off-global-enabled">تفعيل التخفيض الشامل</label>
-                                </div>
-
-                                <div class="form-group">
-                                    <label>نسبة الخصم (%)</label>
-                                    <input type="number" id="off-global-discount" placeholder="مثال: 10" min="0"
-                                        max="100" class="form-control">
-                                </div>
-
-                                <div class="form-group">
-                                    <label>نص الشارة (Badge Text)</label>
-                                    <input type="text" id="off-global-text" placeholder="مثال: خصم نهاية العام"
-                                        class="form-control">
-                                    <small class="text-muted">يظهر هذا النص بجانب المنتجات في الصفحة الرئيسية</small>
-                                </div>
+                            <div class="form-group checkbox-group">
+                                <input type="checkbox" id="off-global-enabled">
+                                <label for="off-global-enabled">تفعيل التخفيض الشامل</label>
                             </div>
 
-                            <div class="form-section">
-                                <h3 class="section-title border-primary">
-                                    <i class="fas fa-truck icon-primary"></i> الشحن المجاني
-                                </h3>
-                                <div class="form-group">
-                                    <label>الحد الأدنى للطلب للحصول على شحن مجاني (ج.م)</label>
-                                    <input type="number" id="off-shipping-threshold" placeholder="مثال: 1000"
-                                        class="form-control">
-                                    <small class="text-muted">اتركه فارغاً لإلغاء عرض الشحن المجاني</small>
-                                </div>
+                            <div class="form-group">
+                                <label>نسبة الخصم (%)</label>
+                                <input type="number" id="off-global-discount" placeholder="مثال: 10" min="0" max="100"
+                                    class="form-control">
                             </div>
 
-                            <button type="submit" class="btn btn-primary btn-block">
-                                <i class="fas fa-save"></i> حفظ جميع العروض
-                            </button>
-                        </form>
-                    </div>
+                            <div class="form-group">
+                                <label>نص الشارة (Badge Text)</label>
+                                <input type="text" id="off-global-text" placeholder="مثال: خصم نهاية العام"
+                                    class="form-control">
+                                <small class="text-muted">يظهر هذا النص بجانب المنتجات في الصفحة الرئيسية</small>
+                            </div>
+                        </div>
+
+                        <div class="form-section">
+                            <h3 class="section-title border-primary">
+                                <i class="fas fa-truck icon-primary"></i> الشحن المجاني
+                            </h3>
+                            <div class="form-group">
+                                <label>الحد الأدنى للطلب للحصول على شحن مجاني (ج.م)</label>
+                                <input type="number" id="off-shipping-threshold" placeholder="مثال: 1000"
+                                    class="form-control">
+                                <small class="text-muted">اتركه فارغاً لإلغاء عرض الشحن المجاني</small>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary btn-block">
+                            <i class="fas fa-save"></i> حفظ جميع العروض
+                        </button>
+                    </form>
                 </div>
             </div>
+        </div>
 
-            <!-- Shipping Section -->
-            <div id="section-shipping" class="content-section">
-                <div class="page-header">
-                    <h1>إعدادات الشحن</h1>
-                    <button class="btn btn-primary" onclick="openShippingModal()">+ إضافة منطقة جديدة</button>
-                </div>
-
-                <div class="card">
-                    <div class="table-responsive">
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>المنطقة / المحافظة</th>
-                                    <th>سعر الشحن (ج.م)</th>
-                                    <th>الإجراءات</th>
-                                </tr>
-                            </thead>
-                            <tbody id="shipping-table"></tbody>
-                        </table>
-                    </div>
-                </div>
+        <!-- Shipping Section -->
+        <div id="section-shipping" class="content-section">
+            <div class="page-header">
+                <h1>إعدادات الشحن</h1>
+                <button class="btn btn-primary" onclick="openShippingModal()">+ إضافة منطقة جديدة</button>
             </div>
 
-            <!-- Moderation Section -->
-            <div id="section-moderation" class="content-section">
-                <div class="page-header">
-                    <h1>مراجعة تقييمات العملاء</h1>
-                    <p class="text-muted">التقييمات التي تم إرسالها من قبل العملاء بعد الشراء (في انتظار الموافقة)</p>
-                </div>
-
-                <div class="card">
-                    <div class="table-responsive">
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>التاريخ</th>
-                                    <th>العميل</th>
-                                    <th>التقييم</th>
-                                    <th>التعليق</th>
-                                    <th>الإجراءات</th>
-                                </tr>
-                            </thead>
-                            <tbody id="moderation-table"></tbody>
-                        </table>
-                    </div>
+            <div class="card">
+                <div class="table-responsive">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>المنطقة / المحافظة</th>
+                                <th>سعر الشحن (ج.م)</th>
+                                <th>الإجراءات</th>
+                            </tr>
+                        </thead>
+                        <tbody id="shipping-table"></tbody>
+                    </table>
                 </div>
             </div>
+        </div>
 
-            <!-- Staff Section -->
-            <div id="section-staff" class="content-section">
-                <div class="page-header">
-                    <h1>إدارة الموظفين والصلاحيات</h1>
-                    <button class="btn btn-primary" onclick="openStaffModal()">+ إضافة موظف جديد</button>
-                </div>
+        <!-- Moderation Section -->
+        <div id="section-moderation" class="content-section">
+            <div class="page-header">
+                <h1>مراجعة تقييمات العملاء</h1>
+                <p class="text-muted">التقييمات التي تم إرسالها من قبل العملاء بعد الشراء (في انتظار الموافقة)</p>
+            </div>
 
-                <div class="card">
-                    <div class="table-responsive">
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>الموظف</th>
-                                    <th>البريد الإلكتروني</th>
-                                    <th>الصلاحيات</th>
-                                    <th>الإجراءات</th>
-                                </tr>
-                            </thead>
-                            <tbody id="staff-table"></tbody>
-                        </table>
-                    </div>
+            <div class="card">
+                <div class="table-responsive">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>التاريخ</th>
+                                <th>العميل</th>
+                                <th>التقييم</th>
+                                <th>التعليق</th>
+                                <th>الإجراءات</th>
+                            </tr>
+                        </thead>
+                        <tbody id="moderation-table"></tbody>
+                    </table>
                 </div>
             </div>
+        </div>
+
+        <!-- Staff Section -->
+        <div id="section-staff" class="content-section">
+            <div class="page-header">
+                <h1>إدارة الموظفين والصلاحيات</h1>
+                <button class="btn btn-primary" onclick="openStaffModal()">+ إضافة موظف جديد</button>
+            </div>
+
+            <div class="card">
+                <div class="table-responsive">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>الموظف</th>
+                                <th>البريد الإلكتروني</th>
+                                <th>الصلاحيات</th>
+                                <th>الإجراءات</th>
+                            </tr>
+                        </thead>
+                        <tbody id="staff-table"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
     </main>
 
     <!-- Staff Modal -->

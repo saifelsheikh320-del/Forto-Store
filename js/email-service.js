@@ -104,7 +104,7 @@ class GoogleEmailService {
                     
                     <!-- Header -->
                     <div style="background: linear-gradient(135deg, #1a202c 0%, #2d3748 100%); padding: 30px 20px; text-align: center;">
-                        <img src="https://forto-store.firebaseapp.com/images/logo.png" alt="Forto Logo" style="width: 80px; height: auto; margin-bottom: 15px; border-radius: 10px;">
+                        <img src="https://forto-store.firebaseapp.com/images/logo-v2.png" alt="Forto Logo" style="width: 80px; height: auto; margin-bottom: 15px; border-radius: 10px;">
                         <h1 style="color: #ffffff; margin: 0; font-size: 24px; letter-spacing: 2px;">FORTO STORE</h1>
                         <p style="color: #a0aec0; margin-top: 5px; font-size: 14px;">إشعار طلب شراء جديد 🛍️</p>
                     </div>
