@@ -1871,9 +1871,17 @@
         <div id="section-customers" class="content-section">
             <div class="page-header">
                 <h1>إدارة العملاء</h1>
-                <button class="btn btn-success" onclick="openExportModal('customers')">
-                    <i class="fas fa-file-excel"></i> استخراج البيانات
-                </button>
+                <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                    <div class="search-box" style="position: relative; max-width: 350px; flex: 1;">
+                        <i class="fas fa-search"
+                            style="position: absolute; right: 15px; top: 50%; transform: translateY(-50%); color: #95a5a6;"></i>
+                        <input type="text" id="customer-search" placeholder="بحث بالاسم، البريد أو الهاتف..."
+                            class="form-control" style="padding-right: 40px;" oninput="refreshCustomers()">
+                    </div>
+                    <button class="btn btn-success" onclick="openExportModal('customers')">
+                        <i class="fas fa-file-excel"></i> استخراج البيانات
+                    </button>
+                </div>
             </div>
 
             <div class="card">
@@ -2726,6 +2734,7 @@
         <div class="modal-content">
             <h3>بيانات الموظف</h3>
             <form id="staff-form">
+                <input type="hidden" id="st-id">
                 <div class="form-group">
                     <label>الاسم الكامل</label>
                     <input type="text" id="st-name" required class="form-control">
@@ -3651,7 +3660,7 @@
 
                     <div class="step-card">
                         <h3><i class="fas fa-mobile-alt" style="color: #e74c3c;"></i> التوافق مع الهواتف</h3>
-                        <p>متجرك متوافق بنسبة 100% مع الجوال، وهو أمر يعشقه جوجل في عام 2025.</p>
+                        <p>متجرك متوافق بنسبة 100% مع الجوال، وهو أمر يعشقه جوجل في عام 2026.</p>
                     </div>
 
                     <div class="info-box" style="background: #f3e5f5; border-right-color: #9c27b0;">

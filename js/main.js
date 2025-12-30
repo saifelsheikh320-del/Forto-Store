@@ -591,10 +591,10 @@ function navigationHighlight() {
     document.querySelectorAll('.nav-links a').forEach(link => {
         // Check if href matches current path (considering both /path and /path.html)
         const href = link.getAttribute('href');
-        const path = currentPath.endsWith('/') ? 'index' : currentPath.split('/').pop().replace('.html', '');
+        const path = currentPath.endsWith('/') || currentPath === '' ? '/' : currentPath.split('/').pop().replace('.html', '');
         const target = href.replace('.html', '');
 
-        if (target === path || (path === '' && target === 'index')) {
+        if (target === path || (path === '/' && target === '/')) {
             link.style.color = 'var(--color-blue)';
         }
     });

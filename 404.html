@@ -28,6 +28,12 @@
             // Extract page name from path
             const pageName = path.split('/').pop().replace('.html', '');
 
+            // Special case: redirect /index to / (root)
+            if (pageName === 'index') {
+                window.location.replace('/' + search + hash);
+                return;
+            }
+
             // If path doesn't end with .html and is a valid page, redirect to .html version
             if (pageName && validPages.includes(pageName) && !path.endsWith('.html')) {
                 const newPath = path.replace(/\/$/, '') + '.html' + search + hash;

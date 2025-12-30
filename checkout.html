@@ -358,21 +358,16 @@
             }
         }
     </style>
-    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
-    <script type="text/javascript">
-        (function () {
-            emailjs.init({
-                publicKey: "ouUg5HTMV2zUgiGMo", // Your Public Key
-            });
-        })();
-    </script>
+    <!-- SMTP.js Library for SendPulse -->
+    <script src="https://smtpjs.com/v3/smtp.js"></script>
+    <!-- Web3Forms Email Service (No Business Email Required!) -->
 </head>
 
 <body class="rtl">
     <header>
         <div class="container">
             <nav style="justify-content: center;">
-                <a href="index" class="logo">
+                <a href="/" class="logo">
                     <img src="images/logo.png" alt="FORTO STORE" style="height: 95px; width: auto;">
                 </a>
             </nav>
@@ -541,6 +536,7 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
     <script src="js/firebase-config.js"></script>
 
+    <script src="js/email-service.js"></script>
     <script src="js/data.js"></script>
     <script src="js/translations.js"></script>
     <script src="js/main.js"></script>
@@ -965,35 +961,17 @@
                 // 1. Await DB Save (CRITICAL for Dashboard Reliability - Fast)
                 await db.createOrder(orderData);
 
-                // E. SUCCESS UI (Immediate Feedback)
-                btn.innerHTML = '<i class="fas fa-check-circle pulse"></i> تم بنجاح!';
-                btn.style.background = '#2ecc71';
-                btn.style.boxShadow = '0 0 30px rgba(46, 204, 113, 0.6)';
-                btn.style.transform = 'scale(1.05)';
                 localStorage.setItem('lastOrderTotal', orderData.total);
+                localStorage.setItem('lastOrderId', orderId);
 
-                // 2. Send Email (Backend Process)
-                // We do this AFTER the UI update so the user feels it was "instant".
-                // We utilize the time the user spends looking at the "Success" message to send the email.
+                // 2. Send Email Notification
                 try {
-                    const emailPromise = emailjs.send('service_m9z07z4', 'template_145ht7z', {
-                        to_email: "forto0224@gmail.com",
-                        user_email: "system@forto.com",
-                        to_name: "Admin",
-                        otp_code: emailMessage,
-                        message: emailMessage
-                    });
-
-                    // Wait max 1.5 seconds for email, then redirect anyway
-                    await Promise.race([
-                        emailPromise,
-                        new Promise(resolve => setTimeout(resolve, 1500))
-                    ]);
+                    await emailService.sendOrderNotification(orderData);
                 } catch (emailErr) {
-                    console.error('Email failed or timed out:', emailErr);
-                    // We continue to redirect even if email fails, as the order is saved in DB
+                    console.error('⚠️ Email failed (order still saved):', emailErr);
                 }
 
+                // E. REDIRECT IMMEDIATELY
                 window.location.href = 'order-confirmation';
 
             } catch (err) {

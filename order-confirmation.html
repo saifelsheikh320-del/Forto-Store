@@ -89,6 +89,10 @@
             <i class="fas fa-check-circle success-icon"></i>
 
             <h1>تم تأكيد الطلب!</h1>
+            <div id="order-id-display"
+                style="font-weight: 900; color: var(--color-blue); margin: 10px 0; font-size: 1.2rem; display: none;">
+                رقم الطلب: <span id="order-id-value"></span>
+            </div>
             <p style="color: #666; max-width: 400px; margin: 20px auto;">شكراً لشرائك. تم استلام طلبك وجاري تجهيزه.</p>
 
             <!-- Review Form -->
@@ -138,8 +142,20 @@
                 document.getElementById('post-purchase-review').style.display = 'block';
             }
 
-            // 2. Track Purchase Event
+            // 2. Track Purchase Event & Show Order ID
             const lastOrder = localStorage.getItem('lastOrderTotal');
+            const lastOrderId = localStorage.getItem('lastOrderId');
+
+            if (lastOrderId) {
+                const orderDisplay = document.getElementById('order-id-display');
+                const orderValue = document.getElementById('order-id-value');
+                if (orderDisplay && orderValue) {
+                    orderValue.innerText = lastOrderId;
+                    orderDisplay.style.display = 'block';
+                }
+                localStorage.removeItem('lastOrderId');
+            }
+
             if (lastOrder && typeof trackEvent === 'function') {
                 trackEvent('Purchase', {
                     value: parseFloat(lastOrder),

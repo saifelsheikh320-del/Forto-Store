@@ -772,12 +772,24 @@ function adminCancelOrder(id) {
 }
 
 function refreshCustomers() {
-    const customers = JSON.parse(localStorage.getItem('customers') || '[]');
+    let customers = JSON.parse(localStorage.getItem('customers') || '[]');
     const tbody = document.getElementById('customers-table');
+    const searchInput = document.getElementById('customer-search');
+    const searchTerm = searchInput ? searchInput.value.toLowerCase().trim() : '';
+
     tbody.innerHTML = '';
 
+    // Filter by search term if exists
+    if (searchTerm) {
+        customers = customers.filter(c =>
+            (c.name || '').toLowerCase().includes(searchTerm) ||
+            (c.email || '').toLowerCase().includes(searchTerm) ||
+            (c.phone || '').toLowerCase().includes(searchTerm)
+        );
+    }
+
     if (customers.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="4" style="text-align: center; padding: 2rem; color: #999;">لا يوجد عملاء مسجلين</td></tr>';
+        tbody.innerHTML = `<tr><td colspan="4" style="text-align: center; padding: 2rem; color: #999;">${searchTerm ? 'لا توجد نتائج مطابقة لبحثك' : 'لا يوجد عملاء مسجلين'}</td></tr>`;
         return;
     }
 
@@ -787,7 +799,7 @@ function refreshCustomers() {
             <td>${c.name}</td>
             <td>${c.email}</td>
             <td>${c.phone}</td>
-            <td>${new Date(c.createdAt).toLocaleDateString('ar-EG')}</td>
+            <td>${c.createdAt ? new Date(c.createdAt).toLocaleDateString('ar-EG') : '---'}</td>
         `;
         tbody.appendChild(tr);
     });
@@ -1703,8 +1715,11 @@ function openStaffModal() {
     const modal = document.getElementById('staff-modal');
     modal.classList.add('active');
 
+    // Clear hidden ID for new staff (editStaff will set it if needed)
+    document.getElementById('st-id').value = '';
+
     // Check if Select All checkbox exists, if not add it
-    const permContainer = modal.querySelector('.form-group div[style*="grid"]');
+    const permContainer = modal.querySelector('.permissions-grid');
     if (permContainer && !document.getElementById('st-all-perms')) {
         const div = document.createElement('div');
         div.style.gridColumn = "1 / -1";
@@ -1754,6 +1769,57 @@ if (staffForm) {
     });
 }
 
+function editStaff(id) {
+    const member = db.getStaff().find(s => s.id === id);
+    if (!member) return;
+
+    openStaffModal();
+    document.getElementById('st-id').value = member.id;
+    document.getElementById('st-name').value = member.name;
+    document.getElementById('st-email').value = member.email;
+    document.getElementById('st-pass').value = member.pass;
+    document.getElementById('st-pin').value = member.pin || '';
+
+    // Set permissions
+    document.querySelectorAll('#staff-form input[type="checkbox"]').forEach(cb => {
+        cb.checked = (member.permissions || []).includes(cb.value);
+    });
+}
+
+function inviteStaff(email, pass) {
+    const modal = document.getElementById('invite-modal');
+    if (!modal) return;
+
+    const baseUrl = window.location.origin;
+    const cleanUrl = baseUrl + '/admin-login';
+    const inviteLink = `${cleanUrl}?email=${encodeURIComponent(email)}`;
+
+    document.getElementById('inv-link').value = inviteLink;
+    document.getElementById('inv-email').value = email;
+    document.getElementById('inv-pass').value = pass;
+
+    modal.classList.add('active');
+}
+
+function copyInvite(type) {
+    let text = "";
+    if (type === 'link') text = document.getElementById('inv-link').value;
+    else if (type === 'email') text = document.getElementById('inv-email').value;
+    else if (type === 'pass') text = document.getElementById('inv-pass').value;
+
+    navigator.clipboard.writeText(text).then(() => {
+        showToast('تم النسخ بنجاح', 'success');
+    });
+}
+
+function getInviteText(email, pass) {
+    const baseUrl = window.location.origin;
+    const cleanUrl = baseUrl + '/admin-login';
+    const inviteLink = `${cleanUrl}?email=${encodeURIComponent(email)}`;
+
+    return `مرحباً بك في فريق فورتو استور! 👋\n\nتم إنشاء حساب موظف لك بنجاح.\n\nبيانات الدخول:\nالبريد: ${email}\nكلمة المرور: ${pass}\n\nرابط الدخول المباشر:\n${inviteLink}`;
+}
+
 function adminDeleteStaff(id) {
     showConfirm('هل أنت متأكد من حذف هذا الموظف؟', () => {
         db.deleteStaff(id);
@@ -1771,7 +1837,8 @@ const fieldDefinitions = {
         { id: 'price', label: 'السعر' },
         { id: 'category', label: 'القسم' },
         { id: 'stock', label: 'الكمية' },
-        { id: 'status', label: 'الحالة' }
+        { id: 'status', label: 'الحالة' },
+        { id: 'url', label: 'رابط المنتج' }
     ],
     orders: [
         { id: 'id', label: 'رقم' },
@@ -1826,6 +1893,10 @@ function confirmExport() {
             if (fields.includes('category')) row['القسم'] = p.category;
             if (fields.includes('stock')) row['الكمية'] = p.stock || 100;
             if (fields.includes('status')) row['الحالة'] = p.archived ? 'مؤرشف' : 'نشط';
+            if (fields.includes('url')) {
+                const baseUrl = window.location.origin;
+                row['رابط المنتج'] = `${baseUrl}/product?id=${p.id}`;
+            }
             return row;
         });
     } else if (currentExportType === 'orders') {
@@ -1926,6 +1997,7 @@ window.toggleAllPerms = toggleAllPerms;
 window.inviteStaff = inviteStaff;
 window.copyInvite = copyInvite;
 window.getInviteText = getInviteText;
+window.editStaff = editStaff;
 window.adminDeleteStaff = adminDeleteStaff;
 window.openShippingModal = openShippingModal;
 window.closeShippingModal = closeShippingModal;

@@ -175,15 +175,9 @@
             /* Space for icon in LTR */
         }
     </style>
-    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
-    <script type="text/javascript">
-        (function () {
-            // ستحتاج لوضع مفتاحك العام هنا بعد عمل حساب
-            emailjs.init({
-                publicKey: "ouUg5HTMV2zUgiGMo",
-            });
-        })();
-    </script>
+    <!-- SMTP.js Library for SendPulse -->
+    <script src="https://smtpjs.com/v3/smtp.js"></script>
+    <!-- Web3Forms Email Service (No Business Email Required!) -->
 </head>
 
 <body>
@@ -305,6 +299,7 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
     <script src="js/firebase-config.js"></script>
 
+    <script src="js/email-service.js"></script>
     <script src="js/data.js"></script>
     <script src="js/translations.js"></script>
     <script src="js/main.js"></script>
@@ -417,7 +412,7 @@
             document.getElementById('forgot-modal').style.display = 'none';
         }
 
-        function sendOTP() {
+        async function sendOTP() {
             const email = document.getElementById('forgot-email').value;
             const customers = JSON.parse(localStorage.getItem('customers') || '[]');
             const exists = customers.find(c => c.email === email);
@@ -430,25 +425,19 @@
             targetEmail = email;
             generatedOTP = Math.floor(1000 + Math.random() * 9000).toString();
 
-            // إرسال إيميل حقيقي عبر EmailJS
-            const templateParams = {
-                to_email: email,
-                user_email: email,
-                to_name: exists.name,
-                otp_code: generatedOTP
-            };
-
-            emailjs.send('service_m9z07z4', 'template_145ht7z', templateParams)
-                .then(() => {
-                    showToast('تم إرسال رمز التحقق إلى بريدك الإلكتروني بنجاح!', 'success');
-                    document.getElementById('step-email').style.display = 'none';
-                    document.getElementById('step-otp').style.display = 'block';
-                }, (error) => {
-                    showToast('فشل في إرسال الإيميل: ' + JSON.stringify(error), 'error');
-                    // في حالة الفشل، سنعرض الرمز في التنبيه مؤقتاً للتجربة
-                    console.log('OTP (Fallback):', generatedOTP);
-                    showToast(`[تجريبي] الرمز هو: ${generatedOTP}`, 'info');
-                });
+            // إرسال إيميل حقيقي عبر SMTP.js (Unlimited Free)
+            try {
+                await emailService.sendPasswordResetOTP(email, exists.name, generatedOTP);
+                showToast('تم إرسال رمز التحقق إلى بريدك الإلكتروني بنجاح!', 'success');
+                document.getElementById('step-email').style.display = 'none';
+                document.getElementById('step-otp').style.display = 'block';
+            } catch (error) {
+                console.error('Email failed:', error);
+                showToast('فشل في إرسال الإيميل. الرمز: ' + generatedOTP, 'error');
+                // عرض الرمز في حالة الفشل للتجربة
+                document.getElementById('step-email').style.display = 'none';
+                document.getElementById('step-otp').style.display = 'block';
+            }
         }
 
         function verifyOTP() {

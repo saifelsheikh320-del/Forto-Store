@@ -1,0 +1,182 @@
+/**
+ * Google Apps Script Email Service
+ * يوفر 15,000 إيميل مجاني شهرياً (500 يومياً)
+ * يستخدم إيميلك الشخصي مباشرة ولا يطلب إيميل شركة
+ */
+
+class GoogleEmailService {
+    constructor() {
+        // ضع هنا الرابط الذي حصلت عليه من "New Deployment" في جوجل
+        this.googleAppUrl = 'https://script.google.com/macros/s/AKfycbxmfWHy1ImRFPQ0BCQaLLx6vxeYv-0i0V086GPaTSNrbcRhDZunKwer40xZBqydK_qOBA/exec';
+    }
+
+    /**
+     * إرسال إيميل عبر سيرفر جوجل الخاص بك
+     */
+    async sendEmail({ to, subject, body }) {
+        if (this.googleAppUrl === '' || this.googleAppUrl.includes('YOUR_GOOGLE')) {
+            console.error('❌ يرجى وضع رابط Google Script في ملف email-service.js');
+            return { success: false };
+        }
+
+        try {
+            await fetch(this.googleAppUrl, {
+                method: 'POST',
+                mode: 'no-cors',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    to: to,
+                    subject: subject,
+                    body: body
+                })
+            });
+
+            console.log('✅ تم إرسال الطلب لسيرفر جوجل');
+            return { success: true };
+
+        } catch (error) {
+            console.error('❌ Google Script Error:', error);
+            return { success: false, error: error.message };
+        }
+    }
+
+    async sendOrderNotification(order) {
+        const subject = `🛍️ طلب جديد #${order.id.split('-').pop()}`;
+        const body = this.getOrderHtmlTemplate(order);
+        return await this.sendEmail({ to: 'forto0224@gmail.com', subject, body });
+    }
+
+    async sendPasswordResetOTP(email, name, otpCode) {
+        const subject = '🔐 كود استعادة كلمة المرور - متجر فورتو';
+        const body = this.getOtpHtmlTemplate(name, otpCode);
+        return await this.sendEmail({ to: email, subject, body });
+    }
+
+    getOrderHtmlTemplate(order) {
+        const date = new Date(order.date).toLocaleString('ar-EG');
+        const itemsHtml = order.items.map(item => `
+            <tr>
+                <td style="padding: 12px; border-bottom: 1px solid #edf2f7; font-size: 14px; color: #4a5568;">${item.name}</td>
+                <td style="padding: 12px; border-bottom: 1px solid #edf2f7; font-size: 14px; color: #4a5568; text-align: center;">${item.quantity}</td>
+                <td style="padding: 12px; border-bottom: 1px solid #edf2f7; font-size: 14px; color: #4a5568; text-align: left;">${item.price} ج.م</td>
+                <td style="padding: 12px; border-bottom: 1px solid #edf2f7; font-size: 14px; color: #2d3748; text-align: left; font-weight: bold;">${(parseFloat(item.price) * item.quantity).toFixed(2)} ج.م</td>
+            </tr>
+        `).join('');
+
+        return `
+            <div dir="rtl" style="font-family: 'Cairo', Tahoma, Arial, sans-serif; background-color: #f7fafc; padding: 40px 10px;">
+                <div style="max-width: 650px; margin: 0 auto; background-color: #ffffff; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.05); border: 1px solid #e2e8f0;">
+                    
+                    <!-- Header -->
+                    <div style="background: linear-gradient(135deg, #1a202c 0%, #2d3748 100%); padding: 35px 20px; text-align: center;">
+                        <h1 style="color: #ffffff; margin: 0; font-size: 30px; letter-spacing: 2px;">FORTO STORE</h1>
+                        <p style="color: #a0aec0; margin-top: 10px; font-size: 16px;">إشعار طلب شراء جديد 🛍️</p>
+                    </div>
+
+                    <div style="padding: 30px;">
+                        <!-- Order Meta -->
+                        <div style="margin-bottom: 30px; padding-bottom: 20px; border-bottom: 2px dashed #edf2f7;">
+                            <div style="font-size: 14px; color: #718096;">
+                                <strong>رقم الطلب:</strong> <span style="color: #2b6cb0;">#${order.id.split('-').pop()}</span><br>
+                                <strong>تاريخ الطلب:</strong> ${date}
+                            </div>
+                        </div>
+
+                        <!-- Customer Info -->
+                        <div style="margin-bottom: 30px;">
+                            <h3 style="color: #2d3748; font-size: 18px; border-right: 4px solid #4299e1; padding-right: 15px; margin-bottom: 15px;">👤 بيانات العميل والشحن</h3>
+                            <div style="background-color: #f8fafc; padding: 20px; border-radius: 10px; border: 1px solid #edf2f7;">
+                                <table style="width: 100%; border-collapse: collapse;">
+                                    <tr>
+                                        <td style="padding: 5px 0; color: #718096; width: 30%;">الاسم:</td>
+                                        <td style="padding: 5px 0; color: #1a202c; font-weight: bold;">${order.customer.name}</td>
+                                    </tr>
+                                    <tr>
+                                        <td style="padding: 5px 0; color: #718096;">الهاتف:</td>
+                                        <td style="padding: 5px 0; color: #1a202c; font-weight: bold;">${order.customer.phone}</td>
+                                    </tr>
+                                    <tr>
+                                        <td style="padding: 5px 0; color: #718096;">العنوان:</td>
+                                        <td style="padding: 5px 0; color: #1a202c;">${order.customer.address}</td>
+                                    </tr>
+                                    <tr>
+                                        <td style="padding: 5px 0; color: #718096;">المحافظة:</td>
+                                        <td style="padding: 5px 0; color: #1a202c;">${order.customer.province || 'غير محدد'}</td>
+                                    </tr>
+                                    <tr>
+                                        <td style="padding: 10px 0; color: #718096; border-top: 1px solid #e2e8f0; margin-top: 10px;">طريقة الدفع:</td>
+                                        <td style="padding: 10px 0; color: #48bb78; font-weight: bold; border-top: 1px solid #e2e8f0; margin-top: 10px;">${this.getPaymentMethodName(order.paymentMethod)}</td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- Products Table -->
+                        <div style="margin-bottom: 30px;">
+                            <h3 style="color: #2d3748; font-size: 18px; border-right: 4px solid #4299e1; padding-right: 15px; margin-bottom: 15px;">🛒 تفاصيل المنتجات</h3>
+                            <div style="overflow-x: auto;">
+                                <table style="width: 100%; border-collapse: collapse; min-width: 400px;">
+                                    <thead>
+                                        <tr style="background-color: #f1f5f9;">
+                                            <th style="padding: 12px; text-align: right; font-size: 13px; color: #475569; border-bottom: 2px solid #e2e8f0;">المنتج</th>
+                                            <th style="padding: 12px; text-align: center; font-size: 13px; color: #475569; border-bottom: 2px solid #e2e8f0;">الكمية</th>
+                                            <th style="padding: 12px; text-align: left; font-size: 13px; color: #475569; border-bottom: 2px solid #e2e8f0;">السعر</th>
+                                            <th style="padding: 12px; text-align: left; font-size: 13px; color: #475569; border-bottom: 2px solid #e2e8f0;">الإجمالي</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        ${itemsHtml}
+                                    </tbody>
+                                    <tfoot>
+                                        <tr style="background-color: #fffaf0;">
+                                            <td colspan="3" style="padding: 15px; text-align: left; font-weight: bold; color: #2d3748; font-size: 16px;">إجمالي مبلغ الطلب:</td>
+                                            <td style="padding: 15px; text-align: left; font-weight: 800; color: #e53e3e; font-size: 20px; border-top: 2px solid #feebc8;">${order.total} ج.م</td>
+                                        </tr>
+                                    </tfoot>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- Footer Note -->
+                        <div style="text-align: center; color: #a0aec0; font-size: 12px; margin-top: 40px; padding-top: 20px; border-top: 1px solid #edf2f7;">
+                            هذا الإيميل تم إرساله تلقائياً من نظام متجر فورتو.<br>
+                            &copy; 2026 Forto Store - Premium Collection
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+    }
+
+    getOtpHtmlTemplate(name, otpCode) {
+        return `
+            <div dir="rtl" style="font-family: 'Cairo', Arial, sans-serif; background: #f0f4f8; padding: 30px; border-radius: 15px; text-align: center;">
+                <div style="background: #ffffff; padding: 40px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.05);">
+                    <h1 style="color: #1a1a1a; margin-bottom: 10px;">Forto Store</h1>
+                    <p style="color: #7f8c8d; font-size: 16px;">مرحباً ${name}</p>
+                    <div style="margin: 30px 0; padding: 20px; background: #e3f2fd; border-radius: 12px;">
+                        <p style="color: #34495e; margin-bottom: 10px;">كود استعادة كلمة المرور هو:</p>
+                        <div style="font-size: 36px; font-weight: bold; color: #1976d2; letter-spacing: 8px;">${otpCode}</div>
+                    </div>
+                    <p style="color: #e74c3c; font-size: 14px;">صالح لمدة 10 دقائق فقط. لا تشارك هذا الكود مع أحد.</p>
+                </div>
+            </div>
+        `;
+    }
+
+    getPaymentMethodName(method) {
+        const methods = {
+            'cod': 'الدفع عند الاستلام 💵',
+            'vodafone': 'فودافون كاش 📱',
+            'instapay': 'انستا باي 🏦'
+        };
+        return methods[method] || method;
+    }
+}
+
+const emailService = new GoogleEmailService();
+if (typeof window !== 'undefined') {
+    window.emailService = emailService;
+}
