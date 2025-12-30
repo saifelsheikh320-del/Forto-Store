@@ -118,13 +118,13 @@ function initAuth() {
         if (shopLinkLi) {
             const ordersLi = document.createElement('li');
             ordersLi.id = 'my-orders-li';
-            ordersLi.innerHTML = `<a href="track-orders.html" data-i18n="my_orders">${t.my_orders}</a>`;
+            ordersLi.innerHTML = `<a href="track-orders" data-i18n="my_orders">${t.my_orders}</a>`;
             shopLinkLi.after(ordersLi);
         }
 
         authLinkContainer.innerHTML = `<a href="#" onclick="handleLogout(event)">${t.logout} (${customer.name})</a>`;
     } else {
-        authLinkContainer.innerHTML = `<a href="login.html" data-i18n="login">${t.login}</a>`;
+        authLinkContainer.innerHTML = `<a href="login" data-i18n="login">${t.login}</a>`;
     }
 }
 
@@ -555,7 +555,7 @@ function initCartBadge() {
 // 3. WhatsApp Floating Button
 function initWhatsApp() {
     // Don't show on login pages or admin dashboard
-    if (window.location.pathname.includes('login.html') || window.location.pathname.includes('/admin/')) return;
+    if (window.location.pathname.includes('login') || window.location.pathname.includes('/admin/')) return;
 
     if (!document.querySelector('.whatsapp-float')) {
         const btn = document.createElement('a');
@@ -589,7 +589,12 @@ function injectLoader() {
 function navigationHighlight() {
     const currentPath = window.location.pathname;
     document.querySelectorAll('.nav-links a').forEach(link => {
-        if (link.getAttribute('href') === currentPath || (currentPath === '/' && link.getAttribute('href') === 'index.html')) {
+        // Check if href matches current path (considering both /path and /path.html)
+        const href = link.getAttribute('href');
+        const path = currentPath.endsWith('/') ? 'index' : currentPath.split('/').pop().replace('.html', '');
+        const target = href.replace('.html', '');
+
+        if (target === path || (path === '' && target === 'index')) {
             link.style.color = 'var(--color-blue)';
         }
     });

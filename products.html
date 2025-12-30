@@ -172,16 +172,16 @@
     <header>
         <div class="container">
             <nav>
-                <a href="index.html" class="logo">
+                <a href="index" class="logo">
                     <img src="images/logo.png" alt="FORTO STORE" style="height: 95px; width: auto;">
                 </a>
                 <ul class="nav-links">
-                    <li><a href="index.html" data-i18n="home">الرئيسية</a></li>
-                    <li><a href="products.html" data-i18n="shop">المتجر</a></li>
-                    <li id="auth-link"><a href="login.html" data-i18n="login">دخول</a></li>
+                    <li><a href="index" data-i18n="home">الرئيسية</a></li>
+                    <li><a href="products" data-i18n="shop">المتجر</a></li>
+                    <li id="auth-link"><a href="login" data-i18n="login">دخول</a></li>
                 </ul>
                 <div class="nav-icons">
-                    <a href="cart.html" class="cart-icon">
+                    <a href="cart" class="cart-icon">
                         <i class="fas fa-shopping-bag"></i>
                         <span class="cart-count">0</span>
                     </a>
@@ -283,9 +283,9 @@
                 <div>
                     <h4 data-i18n="links">روابط</h4>
                     <ul style="list-style: none; margin-top: 20px; line-height: 2;">
-                        <li><a href="index.html" data-i18n="home">الرئيسية</a></li>
-                        <li><a href="products.html" data-i18n="shop">المتجر</a></li>
-                        <li><a href="cart.html" data-i18n="cart_title">السلة</a></li>
+                        <li><a href="index" data-i18n="home">الرئيسية</a></li>
+                        <li><a href="products" data-i18n="shop">المتجر</a></li>
+                        <li><a href="cart" data-i18n="cart_title">السلة</a></li>
                     </ul>
                 </div>
                 <div>
@@ -499,7 +499,7 @@
                 const el = document.createElement('div');
                 el.className = 'product-card reveal';
                 el.style.transitionDelay = `${index * 0.05}s`;
-                el.onclick = () => window.location.href = `product.html?id=${p.id}`;
+                el.onclick = () => window.location.href = `product?id=${p.id}`;
 
                 el.innerHTML = `
                     <div class="product-img" style="position: relative;">

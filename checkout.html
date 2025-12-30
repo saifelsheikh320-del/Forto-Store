@@ -372,7 +372,7 @@
     <header>
         <div class="container">
             <nav style="justify-content: center;">
-                <a href="index.html" class="logo">
+                <a href="index" class="logo">
                     <img src="images/logo.png" alt="FORTO STORE" style="height: 95px; width: auto;">
                 </a>
             </nav>
@@ -558,7 +558,7 @@
             // Since we redirect immediately, toast won't be seen.
             // Better to redirect to login with a message param?
             // Existing logic handles redirect.
-            window.location.href = 'login.html?redirect=checkout.html';
+            window.location.href = 'login?redirect=checkout';
         }
 
         let selectedPayment = 'cod';
@@ -568,7 +568,7 @@
         const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
 
         if (cart.length === 0) {
-            window.location.href = 'cart.html';
+            window.location.href = 'cart';
         }
 
         // Initialize Page
@@ -994,7 +994,7 @@
                     // We continue to redirect even if email fails, as the order is saved in DB
                 }
 
-                window.location.href = 'order-confirmation.html';
+                window.location.href = 'order-confirmation';
 
             } catch (err) {
                 console.error('Submit Error:', err);

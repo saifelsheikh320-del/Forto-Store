@@ -253,16 +253,16 @@
     <header>
         <div class="container">
             <nav>
-                <a href="index.html" class="logo">
+                <a href="index" class="logo">
                     <img src="images/logo.png" alt="FORTO STORE" style="height: 95px; width: auto;">
                 </a>
                 <ul class="nav-links">
-                    <li><a href="index.html" data-i18n="home">الرئيسية</a></li>
-                    <li><a href="products.html" data-i18n="shop">المتجر</a></li>
-                    <li id="auth-link"><a href="login.html" data-i18n="login">دخول</a></li>
+                    <li><a href="index" data-i18n="home">الرئيسية</a></li>
+                    <li><a href="products" data-i18n="shop">المتجر</a></li>
+                    <li id="auth-link"><a href="login" data-i18n="login">دخول</a></li>
                 </ul>
                 <div class="nav-icons">
-                    <a href="cart.html" class="cart-icon">
+                    <a href="cart" class="cart-icon">
                         <i class="fas fa-shopping-bag"></i>
                         <span class="cart-count">0</span>
                     </a>
@@ -282,7 +282,7 @@
                         data-i18n="hero_desc">
                         اكتشف أحدث تشكيلة من أزياء الشارع الفاخرة.
                     </p>
-                    <a href="products.html" class="btn btn-primary hover-glow" data-i18n="shop_collection">تسوق الآن</a>
+                    <a href="products" class="btn btn-primary hover-glow" data-i18n="shop_collection">تسوق الآن</a>
                 </div>
             </div>
         </section>
@@ -322,7 +322,7 @@
                 style="background: #f0f8ff; padding: 4rem; border-radius: 20px; border: 1px solid var(--color-blue);">
                 <h2 style="color: var(--color-blue); font-weight: 900;" id="offer_title"></h2>
                 <p style="margin: 20px 0; font-size: 1.4rem; color: #444;" id="offer_desc"></p>
-                <a href="products.html" class="btn btn-primary" id="offer_btn" style="min-width: 200px;"></a>
+                <a href="products" class="btn btn-primary" id="offer_btn" style="min-width: 200px;"></a>
             </div>
         </section>
 
@@ -356,9 +356,9 @@
                 <div>
                     <h4 data-i18n="links">روابط</h4>
                     <ul style="list-style: none; margin-top: 20px; line-height: 2;">
-                        <li><a href="index.html" data-i18n="home">الرئيسية</a></li>
-                        <li><a href="products.html" data-i18n="shop">المتجر</a></li>
-                        <li><a href="cart.html" data-i18n="cart_title">السلة</a></li>
+                        <li><a href="index" data-i18n="home">الرئيسية</a></li>
+                        <li><a href="products" data-i18n="shop">المتجر</a></li>
+                        <li><a href="cart" data-i18n="cart_title">السلة</a></li>
                     </ul>
                 </div>
                 <div>
@@ -427,7 +427,7 @@
                 const delay = (index + 1) * 100;
                 const card = document.createElement('div');
                 card.className = `product-card reveal delay-${delay}`;
-                card.onclick = () => window.location.href = `product.html?id=${p.id}`;
+                card.onclick = () => window.location.href = `product?id=${p.id}`;
                 card.innerHTML = `
                     <div class="product-img">
                         <img src="${p.image}" alt="${p.name}">

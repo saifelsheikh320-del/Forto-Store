@@ -5,7 +5,7 @@ let quill;
 
 document.addEventListener('DOMContentLoaded', () => {
     if (!db.isAdminLoggedIn()) {
-        window.location.href = '../admin-login.html';
+        window.location.href = '../admin-login';
         return;
     }
 
@@ -227,7 +227,7 @@ function applyPermissions() {
 
 function logout() {
     db.logoutAdmin();
-    window.location.href = '../admin-login.html';
+    window.location.href = '../admin-login';
 }
 
 function toggleSidebar() {

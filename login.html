@@ -360,7 +360,7 @@
                 setTimeout(() => {
                     const urlParams = new URLSearchParams(window.location.search);
                     const redirect = urlParams.get('redirect');
-                    window.location.href = redirect || 'index.html';
+                    window.location.href = redirect || 'index';
                 }, 1000);
             } else {
                 // Check if account exists to give specific error
@@ -390,7 +390,7 @@
                 setTimeout(() => {
                     const urlParams = new URLSearchParams(window.location.search);
                     const redirect = urlParams.get('redirect');
-                    window.location.href = redirect || 'index.html';
+                    window.location.href = redirect || 'index';
                 }, 1000);
             } else {
                 showToast(result.message, 'error');
@@ -399,7 +399,7 @@
 
         // Redirect if already logged in
         if (db.isCustomerLoggedIn()) {
-            window.location.href = 'index.html';
+            window.location.href = 'index';
         }
 
         // Forgot Password Logic

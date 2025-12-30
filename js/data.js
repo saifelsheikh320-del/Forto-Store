@@ -463,9 +463,9 @@ class StoreDB {
             storeName: "Forto Store",
             featuredProductIds: [1, 2, 3],
             collections: [
-                { id: 1, nameAr: "سنيكرز", nameEn: "Sneakers", image: "https://images.unsplash.com/photo-1552346154-21d32810aba3?w=400", link: "products.html?category=Sneakers" },
-                { id: 2, nameAr: "بووت", nameEn: "Boots", image: "https://images.unsplash.com/photo-1638247025967-b4e38f787b76?w=400", link: "products.html?category=Boots" },
-                { id: 3, nameAr: "كاجوال", nameEn: "Casual", image: "https://images.unsplash.com/photo-1607522370275-f14206abe5d3?w=400", link: "products.html?category=Casual" }
+                { id: 1, nameAr: "سنيكرز", nameEn: "Sneakers", image: "https://images.unsplash.com/photo-1552346154-21d32810aba3?w=400", link: "products?category=Sneakers" },
+                { id: 2, nameAr: "بووت", nameEn: "Boots", image: "https://images.unsplash.com/photo-1638247025967-b4e38f787b76?w=400", link: "products?category=Boots" },
+                { id: 3, nameAr: "كاجوال", nameEn: "Casual", image: "https://images.unsplash.com/photo-1607522370275-f14206abe5d3?w=400", link: "products?category=Casual" }
             ],
             featuredTitleAr: "الأكثر رواجاً",
             featuredTitleEn: "Trending Now",
