@@ -21,6 +21,11 @@ document.addEventListener('DOMContentLoaded', () => {
     injectMobileNav();
     initAuth();
     applySiteSettings();
+
+    // Track Real Visit
+    if (typeof db !== 'undefined' && db.trackVisit) {
+        db.trackVisit();
+    }
 });
 
 function setLanguage(lang) {

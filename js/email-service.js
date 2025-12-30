@@ -43,8 +43,35 @@ class GoogleEmailService {
     }
 
     async sendOrderNotification(order) {
-        const subject = `🛍️ طلب جديد #${order.id.split('-').pop()}`;
+        const orderIdShort = order.id.split('-').pop();
         const body = this.getOrderHtmlTemplate(order);
+
+        // 1. Send to Admin
+        const adminSubject = `🛍️ طلب جديد من ${order.customer.name} (#${orderIdShort})`;
+        const adminEmail = 'forto0224@gmail.com';
+        this.sendEmail({ to: adminEmail, subject: adminSubject, body });
+
+        // 2. Send to Customer (if email provided)
+        if (order.customer.email && order.customer.email.includes('@')) {
+            const customerSubject = `🎉 تم استلام طلبك بنجاح من متجر فورتو (#${orderIdShort})`;
+            this.sendEmail({ to: order.customer.email, subject: customerSubject, body });
+        }
+    }
+
+    async sendOrderCancellationNotification(order) {
+        const orderIdShort = order.id.split('-').pop();
+        const subject = `❌ تم إلغاء طلب من العميل: ${order.customer.name} (#${orderIdShort})`;
+        const body = `
+            <div dir="rtl" style="font-family: Arial; padding: 20px; border: 1px solid #fee; border-radius: 10px; background: #fff;">
+                <h2 style="color: #c0392b; text-align: center; border-bottom: 2px solid #e74c3c; padding-bottom: 10px;">إشعار إلغاء طلب</h2>
+                <p>قام العميل <strong>${order.customer.name}</strong> بإلغاء طلبه رقم <strong>#${orderIdShort}</strong></p>
+                <div style="background: #f9f9f9; padding: 15px; border-radius: 8px; margin-top: 20px;">
+                    <p><strong>الهاتف:</strong> ${order.customer.phone}</p>
+                    <p><strong>قيمة الطلب:</strong> ${order.total} ج.م</p>
+                </div>
+                <p style="margin-top: 20px; font-size: 0.9rem; color: #666;">تم هذا الإجراء بناءً على طلب العميل من صفحة "طلباتي".</p>
+            </div>
+        `;
         return await this.sendEmail({ to: 'forto0224@gmail.com', subject, body });
     }
 
@@ -58,7 +85,13 @@ class GoogleEmailService {
         const date = new Date(order.date).toLocaleString('ar-EG');
         const itemsHtml = order.items.map(item => `
             <tr>
-                <td style="padding: 12px; border-bottom: 1px solid #edf2f7; font-size: 14px; color: #4a5568;">${item.name}</td>
+                <td style="padding: 12px; border-bottom: 1px solid #edf2f7; font-size: 14px; color: #4a5568;">
+                    <div style="font-weight: bold;">${item.name}</div>
+                    <div style="font-size: 12px; color: #718096; margin-top: 4px;">
+                        ${item.selectedColor ? `اللون: ${item.selectedColor}` : ''} 
+                        ${item.selectedSize ? ` | المقاس: ${item.selectedSize}` : ''}
+                    </div>
+                </td>
                 <td style="padding: 12px; border-bottom: 1px solid #edf2f7; font-size: 14px; color: #4a5568; text-align: center;">${item.quantity}</td>
                 <td style="padding: 12px; border-bottom: 1px solid #edf2f7; font-size: 14px; color: #4a5568; text-align: left;">${item.price} ج.م</td>
                 <td style="padding: 12px; border-bottom: 1px solid #edf2f7; font-size: 14px; color: #2d3748; text-align: left; font-weight: bold;">${(parseFloat(item.price) * item.quantity).toFixed(2)} ج.م</td>
@@ -70,9 +103,10 @@ class GoogleEmailService {
                 <div style="max-width: 650px; margin: 0 auto; background-color: #ffffff; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.05); border: 1px solid #e2e8f0;">
                     
                     <!-- Header -->
-                    <div style="background: linear-gradient(135deg, #1a202c 0%, #2d3748 100%); padding: 35px 20px; text-align: center;">
-                        <h1 style="color: #ffffff; margin: 0; font-size: 30px; letter-spacing: 2px;">FORTO STORE</h1>
-                        <p style="color: #a0aec0; margin-top: 10px; font-size: 16px;">إشعار طلب شراء جديد 🛍️</p>
+                    <div style="background: linear-gradient(135deg, #1a202c 0%, #2d3748 100%); padding: 30px 20px; text-align: center;">
+                        <img src="https://forto-store.firebaseapp.com/images/logo.png" alt="Forto Logo" style="width: 80px; height: auto; margin-bottom: 15px; border-radius: 10px;">
+                        <h1 style="color: #ffffff; margin: 0; font-size: 24px; letter-spacing: 2px;">FORTO STORE</h1>
+                        <p style="color: #a0aec0; margin-top: 5px; font-size: 14px;">إشعار طلب شراء جديد 🛍️</p>
                     </div>
 
                     <div style="padding: 30px;">
@@ -129,12 +163,32 @@ class GoogleEmailService {
                                     <tbody>
                                         ${itemsHtml}
                                     </tbody>
-                                    <tfoot>
-                                        <tr style="background-color: #fffaf0;">
-                                            <td colspan="3" style="padding: 15px; text-align: left; font-weight: bold; color: #2d3748; font-size: 16px;">إجمالي مبلغ الطلب:</td>
-                                            <td style="padding: 15px; text-align: left; font-weight: 800; color: #e53e3e; font-size: 20px; border-top: 2px solid #feebc8;">${order.total} ج.م</td>
-                                        </tr>
-                                    </tfoot>
+                                </table>
+                            </div>
+
+                            <!-- Summary Block for Mobile Reliability -->
+                            <div style="background-color: #fffaf0; border: 1px solid #feebc8; border-radius: 10px; margin-top: 20px; padding: 20px;">
+                                <table style="width: 100%; border-collapse: collapse;">
+                                    <tr>
+                                        <td style="padding: 5px 0; color: #718096; font-size: 14px;">المجموع الفرعي:</td>
+                                        <td style="padding: 5px 0; color: #2d3748; text-align: left;">${order.subtotal || order.total} ج.م</td>
+                                    </tr>
+                                    ${order.shippingCost ? `
+                                    <tr>
+                                        <td style="padding: 5px 0; color: #718096; font-size: 14px;">مصاريف الشحن:</td>
+                                        <td style="padding: 5px 0; color: #2d3748; text-align: left;">${order.shippingCost} ج.م</td>
+                                    </tr>
+                                    ` : ''}
+                                    ${order.discount ? `
+                                    <tr>
+                                        <td style="padding: 5px 0; color: #e53e3e; font-size: 14px;">خصم الكوبون:</td>
+                                        <td style="padding: 5px 0; color: #e53e3e; text-align: left;">-${order.discount} ج.م</td>
+                                    </tr>
+                                    ` : ''}
+                                    <tr>
+                                        <td style="padding: 15px 0 0 0; font-weight: bold; color: #2d3748; font-size: 18px; border-top: 2px solid #feebc8;">الإجمالي النهائي:</td>
+                                        <td style="padding: 15px 0 0 0; font-weight: 800; color: #e53e3e; font-size: 24px; text-align: left; border-top: 2px solid #feebc8;">${order.total} ج.م</td>
+                                    </tr>
                                 </table>
                             </div>
                         </div>

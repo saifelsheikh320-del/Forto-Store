@@ -99,6 +99,52 @@ class StoreDB {
         return false;
     }
 
+    // --- REAL ANALYTICS TRACKING ---
+    trackVisit() {
+        if (typeof firebase === 'undefined') return;
+
+        // 1. Total Visits Counter
+        database.ref('analytics/total_visits').transaction((current) => {
+            return (current || 0) + 1;
+        });
+
+        // 2. Daily Visits
+        const today = new Date().toISOString().split('T')[0];
+        database.ref(`analytics/daily_visits/${today}`).transaction((current) => {
+            return (current || 0) + 1;
+        });
+
+        // 3. Live Presence & Traffic Sources
+        const urlParams = new URLSearchParams(window.location.search);
+        const source = urlParams.get('utm_source') || (document.referrer ? new URL(document.referrer).hostname : 'Direct');
+
+        const presenceRef = database.ref('analytics/presence').push();
+        presenceRef.onDisconnect().remove();
+        presenceRef.set({
+            timestamp: firebase.database.ServerValue.TIMESTAMP,
+            url: window.location.href,
+            source: source
+        });
+
+        // 4. Source Counters
+        database.ref(`analytics/traffic_sources/${source.replace(/\./g, '_')}`).transaction((current) => {
+            return (current || 0) + 1;
+        });
+    }
+
+    async getAnalytics() {
+        if (typeof firebase === 'undefined') return { total_visits: 0, live_users: 0 };
+        const snapshot = await database.ref('analytics').once('value');
+        const data = snapshot.val() || {};
+        const presence = data.presence ? Object.keys(data.presence).length : 0;
+        return {
+            total_visits: data.total_visits || 0,
+            live_users: presence || 1,
+            daily_visits: data.daily_visits || {},
+            traffic_sources: data.traffic_sources || {}
+        };
+    }
+
     getProducts() {
         try {
             return JSON.parse(localStorage.getItem('products')) || [];
