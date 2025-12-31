@@ -912,7 +912,7 @@ function openProductModal(productId = null) {
             document.getElementById('p-name').value = product.name;
             document.getElementById('p-price').value = product.price;
             document.getElementById('p-old-price').value = product.oldPrice || '';
-            document.getElementById('p-qty').value = product.quantity || '';
+            document.getElementById('p-qty').value = product.quantity !== undefined ? product.quantity : '';
             document.getElementById('p-category').value = product.category;
             document.getElementById('p-color').value = Array.isArray(product.color) ? product.color.join(', ') : (product.color || '');
             document.getElementById('p-sizes').value = (product.size || []).join(', ');

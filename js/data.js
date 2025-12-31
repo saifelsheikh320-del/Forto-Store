@@ -205,6 +205,49 @@ class StoreDB {
         }
     }
 
+    async getOrderAsync(orderId) {
+        if (!orderId) return null;
+        const cleanId = orderId.toString().trim().replace('#', '');
+
+        // 1. Try local first
+        const orders = this.getOrders();
+        const local = orders.find(o =>
+            o.id === cleanId ||
+            o.id === 'ORD-' + cleanId ||
+            o.id.split('-').pop() === cleanId
+        );
+        if (local) return local;
+
+        // 2. Try Firebase if available
+        if (typeof database !== 'undefined') {
+            try {
+                // Search by full ID
+                let snapshot = await database.ref('orders').orderByChild('id').equalTo(cleanId).once('value');
+                if (!snapshot.exists() && !cleanId.startsWith('ORD-')) {
+                    // Try with prefix
+                    snapshot = await database.ref('orders').orderByChild('id').equalTo('ORD-' + cleanId).once('value');
+                }
+
+                if (snapshot.exists()) {
+                    const data = snapshot.val();
+                    // Firebase returns an object with keys since we used push()
+                    const foundOrder = Object.values(data)[0];
+
+                    // Cache it locally for future fast access
+                    const currentOrders = this.getOrders();
+                    if (!currentOrders.find(o => o.id === foundOrder.id)) {
+                        currentOrders.unshift(foundOrder);
+                        localStorage.setItem('orders', JSON.stringify(currentOrders));
+                    }
+                    return foundOrder;
+                }
+            } catch (err) {
+                console.error('Firebase order lookup error:', err);
+            }
+        }
+        return null;
+    }
+
     getOrders() {
         try {
             return JSON.parse(localStorage.getItem('orders')) || [];
