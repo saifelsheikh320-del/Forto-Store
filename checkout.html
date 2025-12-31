@@ -407,9 +407,17 @@
                                     <h3>اختر المحافظة</h3>
                                     <div style="width: 20px;"></div>
                                 </div>
-                                <div class="dropdown-search">
+                                <!-- Search Box - Hidden by default -->
+                                <div class="dropdown-search" id="province-search-box" style="display: none;">
                                     <input type="text" id="province-search" placeholder="ابحث عن محافظتك..."
                                         oninput="filterProvinces()" autocomplete="off">
+                                </div>
+                                <!-- Show Search Button -->
+                                <div style="padding: 10px 12px; border-bottom: 1px solid #f1f5f9;">
+                                    <button type="button" onclick="toggleSearchBox()" id="search-toggle-btn"
+                                        style="width: 100%; padding: 8px; background: #f0f7ff; border: 1px solid #3498db; border-radius: 8px; color: #3498db; font-weight: 600; cursor: pointer; font-family: 'Cairo', sans-serif; transition: all 0.2s;">
+                                        <i class="fas fa-search"></i> ابحث عن محافظتك
+                                    </button>
                                 </div>
                                 <div class="dropdown-options" id="province-options">
                                     <!-- Items populated via JS -->
@@ -595,6 +603,7 @@
             `).join('');
         }
 
+
         function toggleProvinceDropdown(e) {
             if (e) e.stopPropagation();
             const dropdown = document.getElementById('province-dropdown');
@@ -603,7 +612,19 @@
 
             if (isActive) {
                 if (parentReveal) parentReveal.classList.add('lifting');
-                setTimeout(() => document.getElementById('province-search').focus(), 100);
+
+                // Reset search box to hidden state
+                const searchBox = document.getElementById('province-search-box');
+                const toggleBtn = document.getElementById('search-toggle-btn');
+                if (searchBox && toggleBtn) {
+                    searchBox.style.display = 'none';
+                    toggleBtn.innerHTML = '<i class="fas fa-search"></i> ابحث عن محافظتك';
+                    toggleBtn.style.background = '#f0f7ff';
+                    toggleBtn.style.borderColor = '#3498db';
+                    toggleBtn.style.color = '#3498db';
+                    document.getElementById('province-search').value = '';
+                    filterProvinces();
+                }
             } else {
                 if (parentReveal) parentReveal.classList.remove('lifting');
             }
@@ -656,6 +677,32 @@
                 }
             } else if (noRes) {
                 noRes.remove();
+            }
+        }
+
+        function toggleSearchBox() {
+            const searchBox = document.getElementById('province-search-box');
+            const toggleBtn = document.getElementById('search-toggle-btn');
+
+            if (searchBox.style.display === 'none') {
+                searchBox.style.display = 'block';
+                toggleBtn.innerHTML = '<i class="fas fa-times"></i> إخفاء البحث';
+                toggleBtn.style.background = '#fff5f5';
+                toggleBtn.style.borderColor = '#e74c3c';
+                toggleBtn.style.color = '#e74c3c';
+
+                // Focus on search input
+                setTimeout(() => document.getElementById('province-search').focus(), 100);
+            } else {
+                searchBox.style.display = 'none';
+                toggleBtn.innerHTML = '<i class="fas fa-search"></i> ابحث عن محافظتك';
+                toggleBtn.style.background = '#f0f7ff';
+                toggleBtn.style.borderColor = '#3498db';
+                toggleBtn.style.color = '#3498db';
+
+                // Clear search
+                document.getElementById('province-search').value = '';
+                filterProvinces();
             }
         }
 

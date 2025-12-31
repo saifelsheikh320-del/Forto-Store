@@ -46,16 +46,38 @@ class GoogleEmailService {
         const orderIdShort = order.id.split('-').pop();
         const body = this.getOrderHtmlTemplate(order);
 
+        console.log('📧 بدء إرسال إشعارات الطلب #' + orderIdShort);
+
         // 1. Send to Admin
         const adminSubject = `🛍️ طلب جديد من ${order.customer.name} (#${orderIdShort})`;
         const adminEmail = 'forto0224@gmail.com';
-        this.sendEmail({ to: adminEmail, subject: adminSubject, body });
+
+        console.log('📤 إرسال إيميل للأدمن:', adminEmail);
+        const adminResult = await this.sendEmail({ to: adminEmail, subject: adminSubject, body });
+
+        if (adminResult.success) {
+            console.log('✅ تم إرسال الإيميل للأدمن بنجاح');
+        } else {
+            console.error('❌ فشل إرسال الإيميل للأدمن');
+        }
 
         // 2. Send to Customer (if email provided)
         if (order.customer.email && order.customer.email.includes('@')) {
             const customerSubject = `🎉 تم استلام طلبك بنجاح من متجر فورتو (#${orderIdShort})`;
-            this.sendEmail({ to: order.customer.email, subject: customerSubject, body });
+
+            console.log('📤 إرسال إيميل للعميل:', order.customer.email);
+            const customerResult = await this.sendEmail({ to: order.customer.email, subject: customerSubject, body });
+
+            if (customerResult.success) {
+                console.log('✅ تم إرسال الإيميل للعميل بنجاح');
+            } else {
+                console.error('❌ فشل إرسال الإيميل للعميل');
+            }
+        } else {
+            console.log('ℹ️ لم يتم إرسال إيميل للعميل (لا يوجد بريد إلكتروني)');
         }
+
+        console.log('✅ انتهى إرسال إشعارات الطلب #' + orderIdShort);
     }
 
     async sendOrderCancellationNotification(order) {
@@ -103,10 +125,10 @@ class GoogleEmailService {
                 <div style="max-width: 650px; margin: 0 auto; background-color: #ffffff; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.05); border: 1px solid #e2e8f0;">
                     
                     <!-- Header -->
-                    <div style="background: linear-gradient(135deg, #1a202c 0%, #2d3748 100%); padding: 30px 20px; text-align: center;">
-                        <img src="https://forto-store.firebaseapp.com/images/logo-v2.png" alt="Forto Logo" style="width: 80px; height: auto; margin-bottom: 15px; border-radius: 10px;">
-                        <h1 style="color: #ffffff; margin: 0; font-size: 24px; letter-spacing: 2px;">FORTO STORE</h1>
-                        <p style="color: #a0aec0; margin-top: 5px; font-size: 14px;">إشعار طلب شراء جديد 🛍️</p>
+                    <!-- Header -->
+                    <div style="background-color: #ffffff; padding: 30px 20px; text-align: center; border-bottom: 3px solid #3498db;">
+                        <h1 style="color: #2c3e50; margin: 0; font-size: 26px; letter-spacing: 1px; font-weight: 800;">FORTO STORE</h1>
+                        <p style="color: #7f8c8d; margin-top: 5px; font-size: 14px;">إشعار طلب شراء جديد 🛍️</p>
                     </div>
 
                     <div style="padding: 30px;">
