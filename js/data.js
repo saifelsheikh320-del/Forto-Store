@@ -546,6 +546,14 @@ class StoreDB {
         return orders.filter(o => o.customer.email === email);
     }
 
+    deleteCustomer(email) {
+        let customers = JSON.parse(localStorage.getItem('customers') || '[]');
+        customers = customers.filter(c => c.email !== email);
+        localStorage.setItem('customers', JSON.stringify(customers));
+        this.updateCloud('customers');
+        return true;
+    }
+
     // Site Settings
     getSettings() {
         const defaultSettings = {

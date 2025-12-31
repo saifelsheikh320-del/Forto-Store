@@ -2012,6 +2012,10 @@
                     <button class="btn btn-success" onclick="openExportModal('customers')">
                         <i class="fas fa-file-excel"></i> استخراج البيانات
                     </button>
+                    <button class="btn btn-primary" style="background-color: #25D366; border-color: #25D366;"
+                        onclick="openBulkWhatsAppModal()">
+                        <i class="fab fa-whatsapp"></i> رسالة جماعية للعملاء
+                    </button>
                 </div>
             </div>
 
@@ -2024,6 +2028,7 @@
                                 <th>البريد الإلكتروني</th>
                                 <th>رقم الهاتف</th>
                                 <th>تاريخ التسجيل</th>
+                                <th>الإجراء</th>
                             </tr>
                         </thead>
                         <tbody id="customers-table"></tbody>
@@ -3190,6 +3195,57 @@
     </div>
 
     <!-- Manual Order Modal -->
+    <!-- Bulk WhatsApp Modal -->
+    <div id="bulk-whatsapp-modal" class="modal">
+        <div class="modal-content" style="max-width: 500px;">
+            <div class="modal-header">
+                <h2><i class="fab fa-whatsapp"></i> إرسال رسالة جماعية</h2>
+                <button class="close-modal" onclick="closeBulkWhatsAppModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="info-box" style="margin-bottom: 15px;">
+                    <p style="font-size: 0.9rem; margin: 0;">هذه الخاصية تساعدك على مراسلة جميع عملائك. سيتم فتح محادثة
+                        كل عميل بالترتيب.</p>
+                </div>
+
+                <div id="bulk-wa-setup">
+                    <div class="form-group">
+                        <label>نص الرسالة</label>
+                        <textarea id="bulk-wa-message" class="form-control" rows="6"
+                            placeholder="اكتب رسالتك هنا... استخدم {name} لوضع اسم العميل تلقائياً"></textarea>
+                    </div>
+                    <button class="btn btn-success w-100" onclick="startBulkWhatsApp()">
+                        <i class="fas fa-play"></i> بدء عملية الإرسال
+                    </button>
+                </div>
+
+                <div id="bulk-wa-progress" style="display: none; text-align: center; padding: 20px;">
+                    <div class="progress-info" style="margin-bottom: 15px;">
+                        <span id="bulk-wa-current-name"
+                            style="font-weight: bold; display: block; font-size: 1.2rem;"></span>
+                        <span id="bulk-wa-stats" style="color: #666;">العميل 1 من 10</span>
+                    </div>
+                    <div
+                        style="background: #eee; height: 10px; border-radius: 5px; margin-bottom: 20px; overflow: hidden;">
+                        <div id="bulk-wa-bar"
+                            style="background: #25D366; height: 100%; width: 0%; transition: width 0.3s;"></div>
+                    </div>
+                    <div style="display: flex; gap: 10px;">
+                        <button class="btn btn-primary flex-1" onclick="sendToCurrentCustomer()">
+                            <i class="fab fa-whatsapp"></i> إرسال الآن
+                        </button>
+                        <button class="btn btn-secondary" onclick="skipCurrentCustomer()">
+                            تخطي
+                        </button>
+                    </div>
+                    <button class="btn btn-secondary w-100" style="margin-top: 15px;" onclick="stopBulkWhatsApp()">
+                        إيقاف مؤقت
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div id="manual-order-modal" class="modal">
         <div class="modal-content" style="max-width: 750px;">
             <h3 style="margin-bottom: 2rem;">إضافة طلب يدوي</h3>

@@ -434,7 +434,7 @@ function refreshDashboard() {
     const recentTbody = document.getElementById('dashboard-orders-table');
     if (recentTbody) {
         recentTbody.innerHTML = '';
-        const recentOrders = [...orders].reverse().slice(0, 5); // Latest 5 orders
+        const recentOrders = orders.filter(o => o.status !== 'Archived').reverse().slice(0, 5); // Latest 5 non-archived orders
         if (recentOrders.length === 0) {
             recentTbody.innerHTML = '<tr><td colspan="6" style="text-align: center; padding: 1rem; color: #999;">لا توجد طلبات بعد</td></tr>';
         } else {
@@ -881,14 +881,144 @@ function refreshCustomers() {
 
     customers.forEach(c => {
         const tr = document.createElement('tr');
+        // Format phone for WhatsApp (remove spaces, etc.) - assuming Egyptian numbers if no code
+        let waPhone = c.phone || '';
+        if (waPhone && !waPhone.startsWith('+') && !waPhone.startsWith('20')) {
+            waPhone = '2' + waPhone;
+        }
+        waPhone = waPhone.replace(/\D/g, '');
+
         tr.innerHTML = `
             <td>${c.name}</td>
             <td>${c.email}</td>
             <td>${c.phone}</td>
             <td>${c.createdAt ? new Date(c.createdAt).toLocaleDateString('ar-EG') : '---'}</td>
+            <td style="text-align: center;">
+                <div style="display: flex; gap: 8px; justify-content: center;">
+                    ${c.phone ? `
+                    <a href="https://wa.me/${waPhone}" target="_blank" class="btn-icon btn-whatsapp" title="واتساب" style="background: #25D366; color: white; width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center; text-decoration: none;">
+                        <i class="fab fa-whatsapp"></i>
+                    </a>` : ''}
+                    <button onclick="adminDeleteCustomer('${c.email}')" class="btn-icon btn-trash" title="حذف العميل" style="width: 32px; height: 32px; border-radius: 8px;">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </div>
+            </td>
         `;
         tbody.appendChild(tr);
     });
+}
+
+function adminDeleteCustomer(email) {
+    showConfirm('هل أنت متأكد من حذف هذا العميل نهائياً؟', () => {
+        if (db.deleteCustomer(email)) {
+            showToast('تم حذف العميل بنجاح', 'success');
+            refreshCustomers();
+        } else {
+            showToast('فشل في حذف العميل', 'error');
+        }
+    });
+}
+
+// --- Bulk WhatsApp State & Logic ---
+let bulkWACustomers = [];
+let bulkWACurrentIndex = 0;
+let bulkWAMessage = '';
+
+function openBulkWhatsAppModal() {
+    const modal = document.getElementById('bulk-whatsapp-modal');
+    if (modal) {
+        modal.classList.add('active');
+        document.getElementById('bulk-wa-setup').style.display = 'block';
+        document.getElementById('bulk-wa-progress').style.display = 'none';
+        document.getElementById('bulk-wa-message').value = '';
+    }
+}
+
+function closeBulkWhatsAppModal() {
+    const modal = document.getElementById('bulk-whatsapp-modal');
+    if (modal) modal.classList.remove('active');
+    bulkWACustomers = [];
+    bulkWACurrentIndex = 0;
+}
+
+function startBulkWhatsApp() {
+    const msg = document.getElementById('bulk-wa-message').value.trim();
+    if (!msg) {
+        showToast('يرجى كتابة نص الرسالة أولاً', 'error');
+        return;
+    }
+
+    const customers = JSON.parse(localStorage.getItem('customers') || '[]');
+    bulkWACustomers = customers.filter(c => c.phone);
+
+    if (bulkWACustomers.length === 0) {
+        showToast('لا يوجد عملاء لديهم أرقام هواتف مسجلة', 'error');
+        return;
+    }
+
+    bulkWAMessage = msg;
+    bulkWACurrentIndex = 0;
+
+    document.getElementById('bulk-wa-setup').style.display = 'none';
+    document.getElementById('bulk-wa-progress').style.display = 'block';
+    updateBulkWAUI();
+}
+
+function sendToCurrentCustomer() {
+    if (bulkWACurrentIndex >= bulkWACustomers.length) return;
+
+    const customer = bulkWACustomers[bulkWACurrentIndex];
+    let phone = (customer.phone || '').replace(/\D/g, '');
+    if (phone.startsWith('0')) phone = '2' + phone;
+    else if (!phone.startsWith('2')) phone = '2' + phone;
+
+    const personalizedMsg = bulkWAMessage.replace(/{name}/g, customer.name);
+    const url = `https://wa.me/${phone}?text=${encodeURIComponent(personalizedMsg)}`;
+
+    window.open(url, '_blank');
+
+    // Move to next
+    bulkWACurrentIndex++;
+    if (bulkWACurrentIndex < bulkWACustomers.length) {
+        updateBulkWAUI();
+    } else {
+        finishBulkWhatsApp();
+    }
+}
+
+function skipCurrentCustomer() {
+    bulkWACurrentIndex++;
+    if (bulkWACurrentIndex < bulkWACustomers.length) {
+        updateBulkWAUI();
+    } else {
+        finishBulkWhatsApp();
+    }
+}
+
+function updateBulkWAUI() {
+    if (!bulkWACustomers[bulkWACurrentIndex]) return;
+    const customer = bulkWACustomers[bulkWACurrentIndex];
+    document.getElementById('bulk-wa-current-name').innerText = customer.name;
+    document.getElementById('bulk-wa-stats').innerText = `العميل ${bulkWACurrentIndex + 1} من ${bulkWACustomers.length}`;
+
+    const progress = ((bulkWACurrentIndex) / bulkWACustomers.length) * 100;
+    const bar = document.getElementById('bulk-wa-bar');
+    if (bar) bar.style.width = progress + '%';
+}
+
+function finishBulkWhatsApp() {
+    const bar = document.getElementById('bulk-wa-bar');
+    if (bar) bar.style.width = '100%';
+    document.getElementById('bulk-wa-current-name').innerText = 'تم الانتهاء!';
+    document.getElementById('bulk-wa-stats').innerText = 'تمت مراسلة جميع العملاء بنجاح';
+
+    showToast('تم الانتهاء من عملية الإرسال الجماعي', 'success');
+}
+
+function stopBulkWhatsApp() {
+    document.getElementById('bulk-wa-setup').style.display = 'block';
+    document.getElementById('bulk-wa-progress').style.display = 'none';
 }
 
 let editingProductId = null;
@@ -1673,8 +1803,9 @@ function sendAbandonedWhatsApp(phone, name, total) {
 }
 
 function deleteAbandonedCart(id) {
-    showConfirm('هل أنت متأكد من حذف هذه السلة؟', () => {
-        db.deleteAbandonedCart(id);
+    if (!id) return;
+    showConfirm('هل أنت متأكد من حذف هذه السلة من القائمة؟', () => {
+        db.removeAbandonedCart(id);
         refreshAbandonedCarts();
         showToast('تم حذف السلة بنجاح', 'success');
     });
@@ -1682,7 +1813,8 @@ function deleteAbandonedCart(id) {
 
 // Export functions to global scope
 window.sendAbandonedWhatsApp = sendAbandonedWhatsApp;
-window.deleteAbandoned = deleteAbandonedCart;
+window.deleteAbandonedCart = deleteAbandonedCart;
+window.deleteAbandoned = deleteAbandonedCart; // For safety with different naming
 window.refreshAbandonedCarts = refreshAbandonedCarts;
 
 function refreshDiscounts() {
@@ -2113,6 +2245,7 @@ window.showSection = showSection;
 window.refreshProducts = refreshProducts;
 window.refreshOrders = refreshOrders;
 window.refreshCustomers = refreshCustomers;
+window.adminDeleteCustomer = adminDeleteCustomer;
 window.refreshSettings = refreshSettings;
 window.refreshStats = refreshStats;
 window.refreshAbandonedCarts = refreshAbandonedCarts;
@@ -2127,6 +2260,12 @@ window.openCouponModal = openCouponModal;
 window.closeCouponModal = closeCouponModal;
 window.openExportModal = openExportModal;
 window.closeExportModal = closeExportModal;
+window.openBulkWhatsAppModal = openBulkWhatsAppModal;
+window.closeBulkWhatsAppModal = closeBulkWhatsAppModal;
+window.startBulkWhatsApp = startBulkWhatsApp;
+window.sendToCurrentCustomer = sendToCurrentCustomer;
+window.skipCurrentCustomer = skipCurrentCustomer;
+window.stopBulkWhatsApp = stopBulkWhatsApp;
 window.performExport = performExport;
 window.triggerImport = triggerImport;
 window.openManualOrderModal = openManualOrderModal;
