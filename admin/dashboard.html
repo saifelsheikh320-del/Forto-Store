@@ -163,7 +163,8 @@
             box-shadow: var(--card-shadow);
             margin-bottom: 2rem;
             border: 1px solid rgba(0, 0, 0, 0.03);
-            overflow: hidden;
+            /* overflow: hidden; */
+            /* Removing this to prevent dropdown clipping */
         }
 
         .card-header {
@@ -525,6 +526,8 @@
         .table-responsive {
             width: 100%;
             overflow-x: auto;
+            /* overflow-y: visible; */
+            /* This doesn't work alone with overflow-x: auto */
             background: white;
             border-radius: 12px;
             border: 1px solid #eee;
@@ -532,6 +535,23 @@
             /* Hide scrollbar but keep functionality */
             -ms-overflow-style: none;
             scrollbar-width: none;
+            position: relative;
+        }
+
+        /* Allow dropdowns to break out of the responsive table container */
+        .table-responsive:has(.status-dropdown.active) {
+            overflow: visible !important;
+            z-index: 100;
+        }
+
+        /* Ensure parents also don't clip */
+        .card:has(.status-dropdown.active) {
+            overflow: visible !important;
+            z-index: 100;
+        }
+
+        .content-section:has(.status-dropdown.active) {
+            z-index: 100;
         }
 
         .table-responsive::-webkit-scrollbar {
@@ -669,12 +689,101 @@
             background: white;
         }
 
-        /* Badges */
-        .badge {
-            padding: 5px 12px;
+        /* Custom Status Dropdown */
+        .status-dropdown {
+            position: relative;
+            display: inline-block;
+            width: 150px;
+        }
+
+        .status-trigger {
+            padding: 8px 15px;
             border-radius: 20px;
-            font-size: 0.8rem;
+            color: white;
             font-weight: 700;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            font-size: 0.85rem;
+            width: 100%;
+        }
+
+        .status-trigger:hover {
+            transform: scale(1.02);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
+        }
+
+        .status-trigger i {
+            font-size: 0.8rem;
+            transition: transform 0.3s;
+        }
+
+        .status-dropdown.active .status-trigger i {
+            transform: rotate(180deg);
+        }
+
+        .status-menu {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            min-width: 160px;
+            background: white;
+            border-radius: 12px;
+            margin-top: 8px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            z-index: 99999 !important;
+            overflow: hidden;
+            display: none;
+            transform-origin: top;
+            animation: dropdownZoom 0.2s ease-out;
+            border: 1px solid #eee;
+        }
+
+        @keyframes dropdownZoom {
+            from {
+                opacity: 0;
+                transform: scaleY(0.8);
+            }
+
+            to {
+                opacity: 1;
+                transform: scaleY(1);
+            }
+        }
+
+        .status-dropdown.active .status-menu {
+            display: block;
+        }
+
+        .status-option {
+            padding: 10px 15px;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #2c3e50;
+            font-weight: 600;
+            font-size: 0.85rem;
+            border-bottom: 1px solid #f8f9fa;
+        }
+
+        .status-option:last-child {
+            border-bottom: none;
+        }
+
+        .status-option:hover {
+            background: #f8f9fa;
+            padding-right: 20px;
+        }
+
+        .status-option i {
+            width: 18px;
+            text-align: center;
         }
 
         /* Mobile Adjustments (MASTER BREAKPOINT) */
@@ -1732,6 +1841,7 @@
                     <table>
                         <thead>
                             <tr>
+                                <th style="width: 40px;"><input type="checkbox" disabled></th>
                                 <th>رقم الطلب</th>
                                 <th>التاريخ</th>
                                 <th>العميل</th>

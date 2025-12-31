@@ -1,4 +1,102 @@
 
+// Status Definitions & Helpers
+const ORDER_STATUSES = [
+    { id: 'Pending', label: '⏳ قيد الانتظار', color: '#f39c12', icon: 'fas fa-hourglass-start' },
+    { id: 'Confirmed', label: '✅ مؤكد', color: '#3498db', icon: 'fas fa-check-circle' },
+    { id: 'Shipped', label: '🚚 تم الشحن', color: '#9b59b6', icon: 'fas fa-shipping-fast' },
+    { id: 'Delivered', label: '📦 تم التوصيل', color: '#27ae60', icon: 'fas fa-check-double' },
+    { id: 'Archived', label: '📁 مؤرشف', color: '#95a5a6', icon: 'fas fa-archive' }
+];
+
+function getStatusInfo(statusId) {
+    return ORDER_STATUSES.find(s => s.id === statusId) || ORDER_STATUSES[0];
+}
+
+function renderStatusDropdown(orderId, currentStatus, prefix = 'main') {
+    const current = getStatusInfo(currentStatus);
+    const uniqueId = `dropdown-${prefix}-${orderId}`;
+    return `
+        <div class="status-dropdown" id="${uniqueId}">
+            <div class="status-trigger" onclick="toggleStatusDropdown('${orderId}', event, '${prefix}')" style="background: ${current.color};">
+                <span>${current.label}</span>
+                <i class="fas fa-chevron-down"></i>
+            </div>
+            <div class="status-menu">
+                ${ORDER_STATUSES.map(s => `
+                    <div class="status-option" onclick="updateStatusWithAnimation('${orderId}', '${s.id}', event, '${prefix}')">
+                        <i class="${s.icon}"></i>
+                        <span>${s.label.includes(' ') ? s.label.split(' ').slice(1).join(' ') : s.label}</span>
+                    </div>
+                `).join('')}
+            </div>
+        </div>
+    `;
+}
+
+function toggleStatusDropdown(orderId, event, prefix = 'main') {
+    if (event) {
+        event.stopPropagation();
+        event.preventDefault();
+    }
+
+    const uniqueId = `dropdown-${prefix}-${orderId}`;
+
+    // Close all other dropdowns
+    document.querySelectorAll('.status-dropdown').forEach(d => {
+        if (d.id !== uniqueId) d.classList.remove('active');
+    });
+
+    const dropdown = document.getElementById(uniqueId);
+    if (dropdown) dropdown.classList.toggle('active');
+}
+
+function updateStatusWithAnimation(orderId, newStatus, event, prefix = 'main') {
+    if (event) event.stopPropagation();
+
+    const uniqueId = `dropdown-${prefix}-${orderId}`;
+    const dropdown = document.getElementById(uniqueId);
+    if (!dropdown) return;
+
+    dropdown.classList.remove('active');
+
+    const trigger = dropdown.querySelector('.status-trigger');
+    if (trigger) {
+        trigger.style.opacity = '0.5';
+        trigger.style.transform = 'scale(0.95)';
+    }
+
+    setTimeout(() => {
+        try {
+            db.updateOrderStatus(orderId, newStatus);
+            showToast('تم تحديث حالة الطلب بنجاح', 'success');
+
+            // Auto-refresh handled by database events generally, but manual refresh for speed
+            const activeSection = document.querySelector('.content-section.active')?.id?.replace('section-', '');
+            if (activeSection === 'dashboard') refreshDashboard();
+            else if (activeSection === 'orders') refreshOrders();
+        } catch (error) {
+            console.error('Error updating status:', error);
+            showToast('فشل في تحديث حالة الطلب', 'error');
+            if (trigger) {
+                trigger.style.opacity = '1';
+                trigger.style.transform = 'scale(1)';
+            }
+        }
+    }, 300);
+}
+
+// Export functions to window for onclick reachability
+window.toggleStatusDropdown = toggleStatusDropdown;
+window.updateStatusWithAnimation = updateStatusWithAnimation;
+
+// Close dropdowns on click outside
+document.addEventListener('click', (e) => {
+    if (!e.target.closest('.status-dropdown')) {
+        document.querySelectorAll('.status-dropdown.active').forEach(d => {
+            d.classList.remove('active');
+        });
+    }
+});
 
 // Global Variables
 let quill;
@@ -140,8 +238,9 @@ document.addEventListener('DOMContentLoaded', () => {
             updateSidebarBadges();
 
             // 4. If current section is orders, refresh table
-            if (document.getElementById('orders').style.display !== 'none') {
-                renderOrders();
+            const ordersSection = document.getElementById('section-orders');
+            if (ordersSection && ordersSection.classList.contains('active')) {
+                refreshOrders();
             }
         }
     }, 5000); // Check every 5 seconds
@@ -342,18 +441,33 @@ function refreshDashboard() {
             recentOrders.forEach(o => {
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
+                    <td><input type="checkbox" disabled></td>
                     <td style="font-weight: bold;">#${o.id.split('-').pop()}</td>
                     <td>
-                        <div>${new Date(o.date).toLocaleDateString('ar-EG')}</div>
-                        <small style="color: #666; font-size: 0.8rem;">
+                        <div style="font-weight: 600;">${new Date(o.date).toLocaleDateString('ar-EG')}</div>
+                        <small style="color: #7f8c8d; font-size: 0.8rem; display: block; margin-top: 2px;">
                             <i class="far fa-clock" style="font-size: 0.75rem;"></i> ${new Date(o.date).toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit' })}
                         </small>
                     </td>
                     <td>${o.customer?.name || 'عميل مجهول'}</td>
-                    <td style="font-weight: bold;">${o.total} ج.م</td>
-                    <td><span class="badge" style="background: ${getStatusColor(o.status)}; color: white;">${getStatusName(o.status)}</span></td>
-                    <td>
-                        <button onclick="viewOrder('${o.id}')" class="btn btn-small btn-secondary" style="padding: 4px 10px;">عرض</button>
+                    <td style="font-weight: bold; color: #2c3e50;">${o.total} ج.م</td>
+                    <td>${renderStatusDropdown(o.id, o.status, 'dash')}</td>
+                    <td style="width: 150px; text-align: center;">
+                        <div style="display: flex; gap: 5px; justify-content: center;">
+                            <button onclick="viewOrder('${o.id}')" class="btn-icon btn-edit" title="عرض">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                            <button onclick="printShippingLabel('${o.id}')" class="btn-icon btn-print" title="بوليصة الشحن">
+                                <i class="fas fa-print"></i>
+                            </button>
+                            ${o.status !== 'Archived' ? `
+                            <button onclick="adminArchiveOrder('${o.id}')" class="btn-icon btn-archive" title="أرشفة">
+                                <i class="fas fa-archive"></i>
+                            </button>` : ''}
+                            <button onclick="adminDeleteOrder('${o.id}')" class="btn-icon btn-trash" title="حذف نهائي">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
                     </td>
                 `;
                 recentTbody.appendChild(tr);
@@ -494,13 +608,7 @@ function refreshOrders() {
         const tr = document.createElement('tr');
         const customerName = o.customer?.name || 'عميل مجهول';
 
-        // Status Styling
-        let statusBg = '#f39c12'; // Default Orange (Pending)
-        let statusColor = '#fff';
-        if (o.status === 'Confirmed') statusBg = '#3498db';
-        if (o.status === 'Shipped') statusBg = '#9b59b6';
-        if (o.status === 'Delivered') statusBg = '#27ae60';
-        if (o.status === 'Archived') statusBg = '#95a5a6';
+        // Render Row Content
 
         tr.innerHTML = `
             <td><input type="checkbox" class="select-orders" value="${o.id}" onchange="updateBulkActionsUI('orders')"></td>
@@ -513,16 +621,7 @@ function refreshOrders() {
             </td>
             <td>${customerName}</td>
             <td style="font-weight: bold; color: #2c3e50;">${o.total} ج.م</td>
-            <td>
-                <select onchange="updateStatus('${o.id}', this.value)" 
-                        style="padding: 8px 15px; border-radius: 20px; border: none; background: ${statusBg}; color: ${statusColor}; font-family: 'Cairo', sans-serif; font-size: 0.85rem; cursor: pointer; font-weight: bold; appearance: none; text-align: center; min-width: 140px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
-                    <option value="Pending" ${o.status === 'Pending' ? 'selected' : ''} style="background: #fff; color: #333;">⏳ قيد الانتظار</option>
-                    <option value="Confirmed" ${o.status === 'Confirmed' ? 'selected' : ''} style="background: #fff; color: #333;">✅ مؤكد</option>
-                    <option value="Shipped" ${o.status === 'Shipped' ? 'selected' : ''} style="background: #fff; color: #333;">🚚 تم الشحن</option>
-                    <option value="Delivered" ${o.status === 'Delivered' ? 'selected' : ''} style="background: #fff; color: #333;">📦 تم التوصيل</option>
-                    <option value="Archived" ${o.status === 'Archived' ? 'selected' : ''} style="background: #fff; color: #333;">📁 مؤرشف</option>
-                </select>
-            </td>
+            <td>${renderStatusDropdown(o.id, o.status, 'orders')}</td>
             <td style="width: 150px; text-align: center;">
                 <div style="display: flex; gap: 5px; justify-content: center;">
                     <button onclick="viewOrder('${o.id}')" class="btn-icon btn-edit" title="عرض">
@@ -742,25 +841,12 @@ function getPaymentMethodName(method) {
 }
 
 function getStatusName(status) {
-    const statuses = {
-        'Pending': 'قيد الانتظار',
-        'Confirmed': 'مؤكد',
-        'Shipped': 'تم الشحن',
-        'Delivered': 'تم التوصيل',
-        'Archived': 'مؤرشف'
-    };
-    return statuses[status] || status;
+    const info = getStatusInfo(status);
+    return info.label.includes(' ') ? info.label.split(' ').slice(1).join(' ') : info.label;
 }
 
 function getStatusColor(status) {
-    const colors = {
-        'Pending': '#f39c12',
-        'Confirmed': '#3498db',
-        'Shipped': '#9b59b6',
-        'Delivered': '#27ae60',
-        'Archived': '#95a5a6'
-    };
-    return colors[status] || '#666';
+    return getStatusInfo(status).color;
 }
 
 function adminCancelOrder(id) {

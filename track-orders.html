@@ -58,13 +58,18 @@
         }
 
         .status-shipped {
+            background: #eae1ff;
+            color: #6a1b9a;
+        }
+
+        .status-delivered {
             background: #d4edda;
             color: #155724;
         }
 
-        .status-delivered {
-            background: #c3e6cb;
-            color: #155724;
+        .status-archived {
+            background: #e2e3e5;
+            color: #383d41;
         }
 
         .order-items {
@@ -134,6 +139,34 @@
     <script src="js/main.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const publicOrderId = urlParams.get('id');
+            const lang = localStorage.getItem('forto_lang') || 'ar';
+            const t = translations[lang];
+            const container = document.getElementById('orders-list');
+
+            if (publicOrderId) {
+                // Public tracking mode
+                const allOrders = db.getOrders();
+                const order = allOrders.find(o => o.id === publicOrderId);
+
+                if (order) {
+                    renderOrders([order], container, lang, t, true);
+                    document.querySelector('h1').innerText = lang === 'ar' ? 'تتبع طلب' : 'Track Order';
+
+                    // Add a "Back to Home" for public users
+                    const backBtn = document.createElement('div');
+                    backBtn.style.textAlign = 'center';
+                    backBtn.style.marginTop = '2rem';
+                    backBtn.innerHTML = `<a href="index.html" class="btn btn-secondary">${t.home}</a>`;
+                    container.appendChild(backBtn);
+                    return;
+                } else {
+                    container.innerHTML = `<div class="no-orders"><p>${lang === 'ar' ? 'عذراً، لم يتم العثور على هذا الطلب' : 'Sorry, this order was not found'}</p></div>`;
+                    return;
+                }
+            }
+
             if (!db.isCustomerLoggedIn()) {
                 window.location.href = 'login.html';
                 return;
@@ -141,10 +174,10 @@
 
             const customer = db.getCustomer();
             const orders = db.getCustomerOrders(customer.email);
-            const container = document.getElementById('orders-list');
-            const lang = localStorage.getItem('forto_lang') || 'ar';
-            const t = translations[lang];
+            renderOrders(orders, container, lang, t, false);
+        });
 
+        function renderOrders(orders, container, lang, t, isPublic = false) {
             if (orders.length > 0) {
                 container.innerHTML = '';
                 orders.forEach(order => {
@@ -152,8 +185,8 @@
                     card.className = 'order-card reveal';
 
                     const statusClass = 'status-' + order.status.toLowerCase();
-                    const statusText = t['status_' + order.status.toLowerCase()];
-                    const canCancel = order.status === 'Pending';
+                    const statusText = t['status_' + order.status.toLowerCase()] || order.status;
+                    const canCancel = !isPublic && order.status === 'Pending';
 
                     card.innerHTML = `
                         <div class="order-header">
@@ -163,23 +196,22 @@
                             </div>
                             <div style="text-align: left; display: flex; align-items: center; gap: 10px;">
                                 <span class="status-badge ${statusClass}">${statusText}</span>
-                                ${canCancel ? `<button onclick="handleCancel('${order.id}')" class="btn btn-secondary" style="padding: 4px 10px; font-size: 0.8rem; background: #fee; color: #c00; border-color: #fcc;">إلغاء الطلب</button>` : ''}
                             </div>
                         </div>
                         
                         <!-- Tracking Progress Bar -->
                         <div style="margin: 20px 0 30px 0; padding: 0 10px;">
                             <div style="display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 0.8rem; color: #888;">
-                                <span style="${order.status === 'Pending' ? 'color: #f39c12; font-weight: bold;' : ''}">جاري التجهيز</span>
-                                <span style="${order.status === 'Confirmed' ? 'color: #3498db; font-weight: bold;' : ''}">تم التأكيد</span>
-                                <span style="${order.status === 'Shipped' ? 'color: #27ae60; font-weight: bold;' : ''}">تم الشحن</span>
-                                <span style="${order.status === 'Delivered' ? 'color: #27ae60; font-weight: bold;' : ''}">تم التوصيل</span>
+                                <span style="${order.status === 'Pending' ? 'color: #f39c12; font-weight: bold;' : ''}">${lang === 'ar' ? 'جاري التجهيز' : 'Processing'}</span>
+                                <span style="${['Confirmed', 'Shipped', 'Delivered', 'Archived'].includes(order.status) ? 'color: #3498db; font-weight: bold;' : ''}">${t.status_confirmed}</span>
+                                <span style="${['Shipped', 'Delivered', 'Archived'].includes(order.status) ? 'color: #9b59b6; font-weight: bold;' : ''}">${t.status_shipped}</span>
+                                <span style="${['Delivered', 'Archived'].includes(order.status) ? 'color: #27ae60; font-weight: bold;' : ''}">${t.status_delivered}</span>
                             </div>
                             <div style="height: 6px; background: #eee; border-radius: 10px; position: relative; overflow: hidden;">
                                 <div style="height: 100%; background: #27ae60; width: ${order.status === 'Pending' ? '15%' :
                             (order.status === 'Confirmed' ? '45%' :
                                 (order.status === 'Shipped' ? '75%' :
-                                    (order.status === 'Delivered' ? '100%' : '100%')))
+                                    (order.status === 'Delivered' || order.status === 'Archived' ? '100%' : '0%')))
                         }; transition: width 1s ease-in-out;"></div>
                             </div>
                         </div>
@@ -203,16 +235,57 @@
                                 `;
                         }).join('')}
                         </ul>
-                        <div style="margin-top: 1.5rem; padding-top: 1rem; border-top: 1px dotted var(--border-color); display: flex; justify-content: space-between; font-weight: 800;">
-                            <span data-i18n="order_total">${t.order_total}</span>
-                            <span>${order.total} ${t.currency}</span>
+                        <div style="margin-top: 1.5rem; padding-top: 1rem; border-top: 1px dotted var(--border-color); display: flex; justify-content: space-between; align-items: center;">
+                            <div style="display: flex; gap: 10px;">
+                                ${canCancel ? `<button onclick="handleCancel('${order.id}')" class="btn btn-secondary" style="padding: 6px 12px; font-size: 0.8rem; background: #fee; color: #c00; border-color: #fcc;">إلغاء الطلب</button>` : ''}
+                                <button onclick="shareTracking('${order.id}')" class="btn btn-secondary" style="padding: 6px 12px; font-size: 0.8rem;">
+                                    <i class="fas fa-share-alt"></i> ${lang === 'ar' ? 'مشاركة رابط التتبع' : 'Share Tracking Link'}
+                                </button>
+                            </div>
+                            <div style="font-weight: 800;">
+                                <span data-i18n="order_total">${t.order_total}</span>: 
+                                <span>${order.total} ${t.currency}</span>
+                            </div>
                         </div>
                     `;
                     container.appendChild(card);
                 });
                 initScrollAnimations();
+            } else if (!isPublic) {
+                container.innerHTML = `
+                    <div class="no-orders">
+                        <i class="fas fa-box-open" style="font-size: 3rem; color: #ccc; margin-bottom: 1rem;"></i>
+                        <p data-i18n="no_orders">${t.no_orders}</p>
+                        <a href="products.html" class="btn btn-primary" style="margin-top: 1.5rem;" data-i18n="shop_now">${t.shop_now}</a>
+                    </div>
+                `;
             }
-        });
+        }
+
+        function shareTracking(orderId) {
+            const url = window.location.origin + window.location.pathname + '?id=' + orderId;
+            if (navigator.share) {
+                navigator.share({
+                    title: 'تتبع طلبي من متجر فورتو',
+                    text: 'رابط تتبع الطلب الخاص بي في Forto Store:',
+                    url: url
+                }).catch(e => {
+                    copyToClipboard(url);
+                });
+            } else {
+                copyToClipboard(url);
+            }
+        }
+
+        function copyToClipboard(text) {
+            const el = document.createElement('textarea');
+            el.value = text;
+            document.body.appendChild(el);
+            el.select();
+            document.execCommand('copy');
+            document.body.removeChild(el);
+            showToast('تم نسخ رابط التتبع!', 'success');
+        }
 
         async function handleCancel(orderId) {
             const lang = localStorage.getItem('forto_lang') || 'ar';

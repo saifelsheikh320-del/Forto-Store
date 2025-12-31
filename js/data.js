@@ -506,7 +506,7 @@ class StoreDB {
     // Site Settings
     getSettings() {
         const defaultSettings = {
-            heroTitleAr: "تحدى الجاذبية<br><span style='color: var(--color-blue); text-shadow: 0 0 10px rgba(255,255,255,0.8);'>بأناقتك</span>",
+            heroTitleAr: "تحدى الجاذبية<br><span style='color: var(--color-blue);'>بأناقتك</span>",
             heroTitleEn: "Defy Gravity<br><span style='color: var(--color-blue);'>Define Style</span>",
             heroDescAr: "اكتشف أحدث تشكيلة من أزياء الشارع الفاخرة المصممة للطابع العصري. راحة بلا حدود.",
             heroDescEn: "Discover the latest collection of premium streetwear tailored for the modern aesthetic. Zero gravity comfort.",

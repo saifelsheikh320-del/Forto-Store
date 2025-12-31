@@ -93,6 +93,22 @@
                 style="font-weight: 900; color: var(--color-blue); margin: 10px 0; font-size: 1.2rem; display: none;">
                 رقم الطلب: <span id="order-id-value"></span>
             </div>
+
+            <div id="tracking-notice"
+                style="margin: 20px auto; padding: 15px; background: #e3f2fd; border: 1px solid #bbdefb; border-radius: 12px; color: #1976d2; font-weight: 700; font-size: 0.95rem; max-width: 450px; display: none; animation: slideUp 0.5s ease-out;">
+                <div style="margin-bottom: 8px;">
+                    <i class="fas fa-truck-loading" style="font-size: 1.2rem; margin-left: 8px;"></i>
+                    يمكنك الآن تتبع شحنتك لحظة بلحظة
+                </div>
+                <div style="font-size: 0.85rem; font-weight: 400; color: #444; margin-bottom: 12px;">
+                    تابع حالة طلبك وتفاصيل التوصيل من خلال صفحة "طلباتي"
+                </div>
+                <a href="track-orders.html" class="btn btn-primary btn-small"
+                    style="background: #1976d2; border: none;">
+                    انتقل لتتبع الطلب
+                </a>
+            </div>
+
             <p style="color: #666; max-width: 400px; margin: 20px auto;">شكراً لشرائك. تم استلام طلبك وجاري تجهيزه.</p>
 
             <!-- Review Form -->
@@ -149,10 +165,12 @@
             if (lastOrderId) {
                 const orderDisplay = document.getElementById('order-id-display');
                 const orderValue = document.getElementById('order-id-value');
-                if (orderDisplay && orderValue) {
-                    orderValue.innerText = lastOrderId;
-                    orderDisplay.style.display = 'block';
-                }
+                const trackingNotice = document.getElementById('tracking-notice');
+
+                if (orderValue) orderValue.innerText = lastOrderId;
+                if (orderDisplay) orderDisplay.style.display = 'block';
+                if (trackingNotice) trackingNotice.style.display = 'block';
+
                 localStorage.removeItem('lastOrderId');
             }
 
