@@ -262,22 +262,42 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // Monitor Firebase Connection Status
+    // Monitor Databases Connection Status (Hybrid)
+    const updateConnectionStatus = (fbConnected, cfConnected) => {
+        const statusEl = document.getElementById('db-connection-status');
+        if (!statusEl) return;
+
+        let html = '';
+
+        // 1. Firebase Status (Orders)
+        if (fbConnected) {
+            html += '<span style="color: #2ecc71; display: inline-flex; align-items: center; gap: 5px; margin-left: 10px;"><i class="fas fa-database"></i> Orders: Online</span>';
+        } else {
+            html += '<span style="color: #e74c3c; display: inline-flex; align-items: center; gap: 5px; margin-left: 10px;"><i class="fas fa-database"></i> Orders: Offline</span>';
+        }
+
+        // 2. Cloudflare Status (Products)
+        if (cfConnected) {
+            html += '<span style="color: #3498db; display: inline-flex; align-items: center; gap: 5px;"><i class="fas fa-cloud"></i> Products: Cloud (D1)</span>';
+        } else {
+            html += '<span style="color: #95a5a6; display: inline-flex; align-items: center; gap: 5px;"><i class="fas fa-cloud"></i> Products: Local</span>';
+        }
+
+        statusEl.innerHTML = html;
+        statusEl.title = `نظام الطلبات: ${fbConnected ? 'متصل' : 'مفصول'} | نظام المنتجات: ${cfConnected ? 'سحابي (Cloudflare)' : 'محلي (Local)'}`;
+    };
+
+    let isFirebaseConnected = false;
+    let isCloudflareConnected = typeof CloudProducts !== 'undefined'; // Assume true if script loaded
+
     if (typeof firebase !== 'undefined') {
         const connectedRef = firebase.database().ref(".info/connected");
         connectedRef.on("value", (snap) => {
-            const isConnected = snap.val() === true;
-            console.log('Database Connected:', isConnected);
-            const statusEl = document.getElementById('db-connection-status');
-            if (statusEl) {
-                if (isConnected) {
-                    statusEl.innerHTML = '<span style="color: #2ecc71; display: flex; align-items: center; gap: 5px;"><i class="fas fa-wifi"></i> متصل بقاعدة البيانات</span>';
-                    statusEl.title = "الاتصال بقاعدة البيانات نشط";
-                } else {
-                    statusEl.innerHTML = '<span style="color: #e74c3c; display: flex; align-items: center; gap: 5px;"><i class="fas fa-wifi-slash"></i> غير متصل</span>';
-                    statusEl.title = "فشل الاتصال بقاعدة البيانات. تحقق من الإنترنت أو إعدادات Firebase";
-                }
-            }
+            isFirebaseConnected = snap.val() === true;
+            updateConnectionStatus(isFirebaseConnected, isCloudflareConnected);
         });
+    } else {
+        updateConnectionStatus(false, isCloudflareConnected);
     }
 });
 
@@ -1470,7 +1490,7 @@ function triggerImport(type) {
     input.click();
 }
 
-function handleImport(file, type) {
+async function handleImport(file, type) {
     if (!file) return;
     if (typeof XLSX === 'undefined') {
         showAlert('حدث خطأ في تحميل مكتبة Excel. تأكد من اتصالك بالإنترنت.', 'error');
@@ -1478,7 +1498,7 @@ function handleImport(file, type) {
     }
 
     const reader = new FileReader();
-    reader.onload = (e) => {
+    reader.onload = async (e) => {
         try {
             const data = new Uint8Array(e.target.result);
             const workbook = XLSX.read(data, { type: 'array' });
@@ -1486,13 +1506,16 @@ function handleImport(file, type) {
             const rows = XLSX.utils.sheet_to_json(workbook.Sheets[sheetName]);
 
             if (type === 'products') {
-                rows.forEach((row, index) => {
+                showToast('بدء استيراد المنتجات... يرجى الانتظار', 'info');
+                let count = 0;
+
+                for (let i = 0; i < rows.length; i++) {
+                    const row = rows[i];
                     try {
-                        // Mapping with support for multiple header variations
                         const productName = row.name || row['الاسم'] || row['اسم المنتج'];
                         const productPrice = row.price || row['السعر'] || row['سعر المنتج'];
 
-                        if (!productName) return; // Skip empty rows
+                        if (!productName) continue;
 
                         const product = {
                             name: productName,
@@ -1504,24 +1527,31 @@ function handleImport(file, type) {
                             description: row.description || row['الوصف'] || ''
                         };
 
-                        // Only set ID if it's a valid number
                         const rowId = row.id || row['ID'] || row['المعرف'];
                         if (rowId && !isNaN(parseInt(rowId))) {
                             product.id = parseInt(rowId);
                         }
 
-                        db.saveProduct(product);
+                        // Use skipRefresh = true to avoid unnecessary fetches during the loop
+                        await db.saveProduct(product, true);
+                        count++;
                     } catch (rowError) {
-                        console.error(`Error processing row ${index}:`, rowError);
+                        console.error(`Error processing row ${i}:`, rowError);
                     }
-                });
+                }
+
+                // Final sync after all products are saved
+                if (typeof CloudProducts !== 'undefined') {
+                    await CloudProducts.fetchAll();
+                }
+
                 refreshProducts();
-                showToast(`تم استيراد ${rows.length} منتج بنجاح!`, 'success');
+                showToast(`تم استيراد ${count} منتج بنجاح! ✅`, 'success');
             }
         } catch (e) {
             console.error('Import Error:', e);
             showAlert('حدث خطأ أثناء استيراد الملف. يرجى التأكد من تنسيق الملف الصحيح ومسميات الأعمدة.', 'error');
-        };
+        }
     };
     reader.readAsArrayBuffer(file);
 }

@@ -158,7 +158,7 @@ class StoreDB {
         return products.find(p => p.id == id);
     }
 
-    saveProduct(product) {
+    saveProduct(product, skipSync = false) {
         let products = this.getProducts();
         if (product.id) {
             // Check if it exists for update
@@ -175,7 +175,9 @@ class StoreDB {
             products.push(product);
         }
         localStorage.setItem('products', JSON.stringify(products));
-        this.updateCloud('products');
+        if (!skipSync) {
+            this.updateCloud('products');
+        }
     }
 
     deleteProduct(id) {
@@ -780,3 +782,57 @@ class StoreDB {
 }
 
 const db = new StoreDB();
+
+// ✅ Cloudflare Hook (Hybrid Mode)
+if (typeof CloudProducts !== 'undefined') {
+
+    // 1. Sync on Load
+    CloudProducts.fetchAll().then(products => {
+        if (products && products.length > 0) {
+            console.log("⚡ Products synced from Cloudflare KV");
+        }
+    });
+
+    // 2. Override Save
+    const originalSave = db.saveProduct.bind(db);
+    db.saveProduct = async function (product, skipRefresh = false) {
+        await CloudProducts.save(product, skipRefresh).catch(e => console.error("Cloud Save Error:", e));
+        originalSave(product, true); // Always skip Firebase sync for products when Cloudflare is active
+    };
+
+    // 3. Override Delete
+    const originalDelete = db.deleteProduct.bind(db);
+    db.deleteProduct = async function (id) {
+        await CloudProducts.delete(id).catch(e => console.error("Cloud Delete Error:", e));
+        originalDelete(id);
+    };
+
+    // 4. Override Clear All
+    const originalClear = db.clearAllProducts.bind(db);
+    db.clearAllProducts = async function () {
+        await CloudProducts.clearAll().catch(e => console.error("Cloud Clear Error:", e));
+        originalClear();
+    };
+
+    // 5. Override Archive
+    const originalArchive = db.archiveProduct.bind(db);
+    db.archiveProduct = async function (id) {
+        let p = this.getProduct(id);
+        if (p) {
+            p.archived = true;
+            await CloudProducts.save(p).catch(e => console.error("Cloud Archive Error:", e));
+        }
+        originalArchive(id);
+    };
+
+    // 6. Override Unarchive (Logic missing in initial plan, added for completeness)
+    const originalUnarchive = db.unarchiveProduct.bind(db);
+    db.unarchiveProduct = async function (id) {
+        let p = this.getProduct(id);
+        if (p) {
+            p.archived = false;
+            await CloudProducts.save(p).catch(e => console.error("Cloud Unarchive Error:", e));
+        }
+        originalUnarchive(id);
+    };
+}
