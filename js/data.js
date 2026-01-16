@@ -578,7 +578,7 @@ class StoreDB {
             offerDesc: "احصل على خصم يصل إلى 40% على منتجات مختارة.",
             offerBtn: "عرض العروض",
             offerEnabled: true,
-            fbPixelId: "878997511375782",
+            fbPixelId: "1378052297664386",
             reviewsEnabled: true,
             reviews: [
                 { id: 1, name: "أحمد محمد", comment: "أحذية رائعة جداً وخامة منتزة، التوصيل كان سريع جداً.", rating: 5, date: "2026-01-01" },
